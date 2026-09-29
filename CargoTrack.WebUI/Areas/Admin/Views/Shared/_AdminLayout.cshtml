@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CargoTrack Yönetim Paneli</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Hanken Grotesk', sans-serif; background-color: #f4f6f9; color: #212529; }
+        .sidebar { min-height: 100vh; background-color: #001e3c; color: #fff; }
+        .sidebar a { color: #cfd8dc; text-decoration: none; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-radius: 6px; margin: 3px 8px; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background-color: #0b3c6d; color: #ffffff; }
+        .sidebar .sidebar-heading { font-size: 11px; text-transform: uppercase; color: #78909c; padding: 12px 18px 4px; font-weight: 700; letter-spacing: 0.5px; }
+        .main-content { min-height: 100vh; display: flex; flex-direction: column; }
+        .topbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .card-stat { border-radius: 10px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .material-symbols-outlined { font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar d-none d-md-block">
+                <div class="p-3 border-bottom border-secondary d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-warning" style="font-size: 28px;">package_2</span>
+                    <div>
+                        <div class="fw-bold fs-5 text-white">CargoTrack</div>
+                        <div class="text-secondary small" style="font-size: 11px;">Admin Yönetim Sistemi</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-heading">Operasyon & Dashboard</div>
+                <a href="/Admin/Dashboard/Index">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="/Admin/Report/Index">
+                    <span class="material-symbols-outlined">analytics</span>
+                    Performans & Raporlar
+                </a>
+
+                <div class="sidebar-heading">Kargo Yönetimi</div>
+                <a href="/Admin/Cargo/Index">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    Tüm Kargolar
+                </a>
+                <a href="/Admin/Cargo/Create">
+                    <span class="material-symbols-outlined">add_box</span>
+                    Yeni Kargo Kabulü
+                </a>
+
+                <div class="sidebar-heading">Şube & Lojistik Ağı</div>
+                <a href="/Admin/Branch/Index">
+                    <span class="material-symbols-outlined">store</span>
+                    Şubeler
+                </a>
+                <a href="/Admin/TransferCenter/Index">
+                    <span class="material-symbols-outlined">swap_horiz</span>
+                    Transfer Merkezleri
+                </a>
+                <a href="/Admin/Employee/Index">
+                    <span class="material-symbols-outlined">badge</span>
+                    Personeller
+                </a>
+
+                <div class="sidebar-heading">Sistem & Kurallar</div>
+                <a href="/Admin/Pricing/Index">
+                    <span class="material-symbols-outlined">payments</span>
+                    Dinamik Fiyatlandırma
+                </a>
+                <a href="/Admin/RoleAssign/Index">
+                    <span class="material-symbols-outlined">group</span>
+                    Kullanıcı & Roller
+                </a>
+                <a href="/Admin/AuditLog/Index">
+                    <span class="material-symbols-outlined">history_toggle_off</span>
+                    Audit Log (Denetim)
+                </a>
+
+                <hr class="border-secondary mx-3 my-2" />
+                <a href="/Default/Index" target="_blank">
+                    <span class="material-symbols-outlined">open_in_new</span>
+                    Kargo Takip Ekranı
+                </a>
+                <a href="/Login/Logout" class="text-danger">
+                    <span class="material-symbols-outlined">logout</span>
+                    Çıkış Yap
+                </a>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <header class="topbar">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-danger">Sistem Yöneticisi</span>
+                        <span class="text-muted small">| Hoş geldiniz, <strong>@User.Identity?.Name</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="/Default/Index" class="btn btn-sm btn-outline-primary">Herkese Açık Takip Ekranı</a>
+                        <a href="/Login/Logout" class="btn btn-sm btn-outline-danger">Çıkış</a>
+                    </div>
+                </header>
+
+                <main class="p-4 flex-grow-1">
+                    @if (TempData["success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                            <span class="material-symbols-outlined align-middle me-1">check_circle</span>
+                            @TempData["success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                            <span class="material-symbols-outlined align-middle me-1">error</span>
+                            @TempData["error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </main>
+
+                <footer class="bg-white border-top p-3 text-center text-muted small">
+                    CargoTrack Case Study • .NET Core MVC & N-Katmanlı Mimari Kurumsal Kargo Takip Sistemi © 2026
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

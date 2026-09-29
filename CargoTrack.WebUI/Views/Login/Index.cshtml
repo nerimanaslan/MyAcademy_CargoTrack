@@ -1,0 +1,40 @@
+@using CargoTrack.DTO.DTOs.UserDtos
+@model LoginUserDto
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Sisteme Giriş Yap</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" asp-controller="Login" method="post">
+                        
+                        <!-- Hataları göstereceğimiz alan -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold"></div>
+                        
+                        <div class="form-group mb-3">
+                            <label asp-for="UserName" class="form-label">Kullanıcı Adı</label>
+                            <input asp-for="UserName" class="form-control" placeholder="Kullanıcı adınızı giriniz..." required />
+                        </div>
+                        
+                        <div class="form-group mb-4">
+                            <label asp-for="Password" class="form-label">Şifre</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Şifrenizi giriniz..." required />
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

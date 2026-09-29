@@ -1,0 +1,33 @@
+@model List<CargoTrack.DTO.DTOs.Cargos.PublicRecentShipmentDto>
+@{
+    ViewData["Title"] = "Kargo Takip";
+    Layout = "~/Views/UILayout/Index.cshtml";
+}
+
+<div class="max-w-container-max-width mx-auto w-full px-margin-mobile md:px-gutter py-section-padding">
+
+    <!-- Üst Başlık -->
+    <div class="text-center mb-stack-lg">
+        <h1 class="font-headline-xl text-headline-xl text-on-background mb-4">Kargo Takip</h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant">Takip numaranızı girerek gönderinizin güncel durumunu görüntüleyebilirsiniz.</p>
+    </div>
+
+    <!-- 1. Kargo Sorgulama Kartı -->
+    <partial name="Partials/_SearchCardPartial" />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+
+        <!-- Sol Kolon: Son Sorgulananlar -->
+        <div class="lg:col-span-8">
+            <!-- 2. Son Sorgulanan Gönderiler -->
+            <partial name="Partials/_RecentShipmentsPartial" model="Model" />
+        </div>
+
+        <!-- Sağ Kolon: Yardım Kartı -->
+        <div class="lg:col-span-4 mt-stack-lg lg:mt-0">
+            <!-- 3. Yardım / Bilgi Kartı -->
+            <partial name="Partials/_HelpCardPartial" />
+        </div>
+
+    </div>
+</div>

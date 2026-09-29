@@ -1,0 +1,76 @@
+@model List<ResultAuditLogDto>
+@{
+    ViewData["Title"] = "Audit Log (Denetim Kayıtları)";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Audit Log (Denetim Kayıtları)</h2>
+        <p class="text-muted small mb-0">Sistemde gerçekleşen tüm kullanıcı operasyonları, durum değişimleri ve eski/yeni değerler</p>
+    </div>
+</div>
+
+<div class="card card-stat bg-white p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <input type="text" name="search" class="form-control" placeholder="Açıklama, kullanıcı adı veya Entity ID ara..." value="@ViewBag.CurrentSearch" />
+        </div>
+        <div class="col-md-4">
+            <select name="entityName" class="form-select">
+                <option value="">-- Tüm Entity Türleri --</option>
+                <option value="Cargo" selected="@(ViewBag.CurrentEntity == "Cargo" ? "selected" : null)">Cargo</option>
+                <option value="Branch" selected="@(ViewBag.CurrentEntity == "Branch" ? "selected" : null)">Branch</option>
+                <option value="Employee" selected="@(ViewBag.CurrentEntity == "Employee" ? "selected" : null)">Employee</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-dark w-100">Filtrele</button>
+            <a href="/Admin/AuditLog/Index" class="btn btn-outline-secondary">Temizle</a>
+        </div>
+    </form>
+</div>
+
+<div class="card card-stat bg-white overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th>Tarih & Saat</th>
+                    <th>Kullanıcı</th>
+                    <th>İşlem Türü</th>
+                    <th>Entity</th>
+                    <th>Eski Değer</th>
+                    <th>Yeni Değer</th>
+                    <th>Açıklama</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td class="text-muted text-nowrap">@log.Timestamp.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                            <td class="fw-semibold">@log.UserName</td>
+                            <td>
+                                <span class="badge @(log.ActionType == "Create" ? "bg-success" : log.ActionType == "StatusChange" ? "bg-primary" : log.ActionType == "Delivery" ? "bg-info" : log.ActionType == "DeliveryException" ? "bg-danger" : "bg-secondary")">
+                                    @log.ActionType
+                                </span>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@log.EntityName</span></td>
+                            <td class="text-muted">@(log.OldValue ?? "-")</td>
+                            <td class="fw-bold">@(log.NewValue ?? "-")</td>
+                            <td>@log.Description</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">Kayıt bulunamadı.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

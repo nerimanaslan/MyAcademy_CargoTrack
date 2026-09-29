@@ -1,0 +1,70 @@
+@model List<ResultEmployeeDto>
+@{
+    ViewData["Title"] = "Personeller";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Personeller</h2>
+        <p class="text-muted small mb-0">Şube ve transfer merkezi kurye & operasyon personelleri</p>
+    </div>
+    <a href="/Admin/Employee/Create" class="btn btn-primary d-flex align-items-center gap-1">
+        <span class="material-symbols-outlined">add</span>
+        Yeni Personel Ekle
+    </a>
+</div>
+
+<div class="card card-stat bg-white overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Ad Soyad</th>
+                    <th>Ünvan</th>
+                    <th>Bağlı Olduğu Birim</th>
+                    <th>İletişim</th>
+                    <th>Teslimat Sayısı</th>
+                    <th>Durum</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int count = 0;
+                    @foreach (var item in Model)
+                    {
+                        count++;
+                        <tr>
+                            <td>@count</td>
+                            <td class="fw-bold">@item.FullName</td>
+                            <td><span class="badge bg-light text-dark border">@item.Title</span></td>
+                            <td>@(item.BranchName ?? item.TransferCenterName ?? "Genel Merkez")</td>
+                            <td class="small">
+                                <div>@item.Phone</div>
+                                <div class="text-muted">@item.Email</div>
+                            </td>
+                            <td><span class="badge bg-success">@item.TotalDeliveries teslimat</span></td>
+                            <td>
+                                <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                                    @(item.IsActive ? "Aktif" : "Pasif")
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a href="/Admin/Employee/Update/@item.Id" class="btn btn-sm btn-outline-info">Düzenle</a>
+                                <a href="/Admin/Employee/Delete/@item.Id" onclick="return confirm('Bu personeli silmek istediğinize emin misiniz?')" class="btn btn-sm btn-outline-danger">Sil</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">Kayıtlı personel bulunmamaktadır.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

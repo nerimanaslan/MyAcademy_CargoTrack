@@ -1,0 +1,27 @@
+﻿<div class="bg-white rounded-lg shadow-sm border border-outline-variant p-6 md:p-8 max-w-3xl mx-auto mb-section-padding relative overflow-hidden">
+    <div class="absolute -right-16 -top-16 opacity-5 pointer-events-none">
+        <span class="material-symbols-outlined text-[200px] text-primary">local_shipping</span>
+    </div>
+    <div class="flex items-center gap-3 mb-6 relative z-10">
+        <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+        <h2 class="font-headline-md text-headline-md text-on-background">Kargo Takip Numarası</h2>
+    </div>
+
+    <form class="flex flex-col md:flex-row gap-4 relative z-10" asp-action="CargoDetails" asp-controller="Default" method="get">
+        <input name="trackCode" class="flex-grow border border-outline-variant rounded-DEFAULT px-4 py-3 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow bg-surface-bright placeholder:text-outline h-[48px]" placeholder="Örn: CT202609081234" type="text" required />
+        <button class="bg-secondary-container text-on-primary px-8 py-3 rounded-DEFAULT font-semibold flex items-center justify-center gap-2 hover:bg-opacity-90 transition-opacity h-[48px] whitespace-nowrap shadow-sm hover:shadow-md" type="submit">
+            <span class="material-symbols-outlined text-sm font-bold">search</span>
+            Gönderiyi Sorgula
+        </button>
+    </form>
+
+    @if (ViewBag.error != null)
+    {
+        <div class="mt-4 p-4 rounded bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2 relative z-10">
+            <span class="material-symbols-outlined text-red-600">error</span>
+            <span>@ViewBag.error</span>
+        </div>
+    }
+</div>

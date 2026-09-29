@@ -1,0 +1,33 @@
+﻿@model UpdateAboutDto
+@{
+    ViewData["Title"] = "Hakkımızda Güncelle";
+}
+
+<div class="container mt-4">
+    <h2>Hakkımızda Güncelle</h2>
+    <hr />
+    <form asp-area="Admin" asp-controller="About" asp-action="Update" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">Başlık</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Açıklama</label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ImageUrl" class="form-label">Görsel Url</label>
+            <input asp-for="ImageUrl" class="form-control" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Güncelle</button>
+        <a asp-area="Admin" asp-controller="About" asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+    </form>
+</div>

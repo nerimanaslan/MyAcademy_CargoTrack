@@ -1,0 +1,56 @@
+@model CargoTrack.DTO.DTOs.Cargos.PublicCargoTrackingDto
+
+<div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 p-6 flex flex-col md:flex-row gap-8">
+    
+    <div class="flex-1 border-r-0 md:border-r border-outline-variant/30 pr-0 md:pr-6">
+        <div class="mb-6">
+            <p class="font-label-caps text-label-caps text-outline mb-1 uppercase">Takip Numarası</p>
+            <h2 class="font-headline-md text-headline-md text-primary-container">@Model.TrackCode</h2>
+        </div>
+        
+        <div class="inline-flex items-center gap-1.5 @Model.StatusBadgeClass px-3 py-1 rounded-full font-status-label text-status-label mb-6">
+            <span class="material-symbols-outlined text-[16px]">@Model.StatusIcon</span>
+            @Model.StatusName
+        </div>
+        
+        <div class="flex gap-8">
+            <div>
+                <p class="text-sm text-outline mb-1">Gönderim Tarihi</p>
+                <p class="font-semibold text-on-background">@Model.ShipmentDateFormatted</p>
+            </div>
+            <div>
+                <p class="text-sm text-outline mb-1">@Model.EstimatedDeliveryTitle</p>
+                <p class="font-semibold text-on-background">@Model.EstimatedDeliveryFormatted</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yolculuk Özeti Grafiği -->
+    <div class="flex-1 flex flex-col justify-center">
+        <div class="flex justify-between items-center mb-2">
+            <div class="flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mb-2 text-blue-700">
+                    <span class="material-symbols-outlined text-[18px]">location_on</span>
+                </div>
+                <span class="font-semibold text-on-background">@Model.OriginCity</span>
+                <span class="text-xs text-outline">@Model.OriginDistrict</span>
+            </div>
+            <div class="flex-grow flex items-center px-2">
+                <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+                <div class="flex-grow h-px bg-gray-300 relative">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2">
+                        <span class="material-symbols-outlined text-gray-500">local_shipping</span>
+                    </div>
+                </div>
+                <div class="w-2 h-2 rounded-full bg-gray-300"></div>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[18px]">flag</span>
+                </div>
+                <span class="font-semibold text-on-background">@Model.DestinationCity</span>
+                <span class="text-xs text-outline">@Model.DestinationDistrict</span>
+            </div>
+        </div>
+    </div>
+</div>

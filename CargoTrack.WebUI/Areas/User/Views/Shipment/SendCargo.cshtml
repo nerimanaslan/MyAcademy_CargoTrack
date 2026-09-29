@@ -1,0 +1,112 @@
+@model CreateCargoDto
+@{
+    ViewData["Title"] = "Yeni Kargo Gönder";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Yeni Kargo Gönderimi Oluştur</h2>
+        <p class="text-muted small mb-0">Alıcı ve paket bilgilerini girerek hemen kargo gönderi kaydı oluşturun.</p>
+    </div>
+    <a href="/User/Dashboard/Index" class="btn btn-outline-secondary">&larr; Panelime Dön</a>
+</div>
+
+<form asp-action="SendCargo" method="post" class="row g-4">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Alıcı Bilgileri</h5>
+
+            <div class="mb-3">
+                <label asp-for="ReceiverName" class="form-label fw-semibold">Alıcı Adı Soyadı</label>
+                <input asp-for="ReceiverName" class="form-control" placeholder="Örn: Ayşe Kaya" required />
+                <span asp-validation-for="ReceiverName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReceiverPhone" class="form-label fw-semibold">Alıcı Cep Telefonu</label>
+                <input asp-for="ReceiverPhone" class="form-control" placeholder="05XXXXXXXXX" required />
+                <span asp-validation-for="ReceiverPhone" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReceiverAddress" class="form-label fw-semibold">Teslimat Adresi</label>
+                <textarea asp-for="ReceiverAddress" class="form-control" rows="3" placeholder="Açık teslimat adresi..." required></textarea>
+                <span asp-validation-for="ReceiverAddress" class="text-danger small"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Kargo Şube ve Paket Bilgileri</h5>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="OriginBranchId" class="form-label fw-semibold">Teslim Edeceğiniz Şube</label>
+                    <select asp-for="OriginBranchId" asp-items="ViewBag.Branches" class="form-select" required>
+                        <option value="">-- Şube Seçin --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DestinationBranchId" class="form-label fw-semibold">Alıcıya En Yakın Varış Şubesi</label>
+                    <select asp-for="DestinationBranchId" asp-items="ViewBag.Branches" class="form-select" required>
+                        <option value="">-- Şube Seçin --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CargoType" class="form-label fw-semibold">Gönderi Tipi</label>
+                <select asp-for="CargoType" class="form-select">
+                    <option value="1">Standart Gönderi</option>
+                    <option value="2">Express / Hızlı Gönderi</option>
+                    <option value="3">Hassas / Kırılabilir Gönderi</option>
+                    <option value="5">Aynı Gün Teslimat</option>
+                </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-3">
+                    <label asp-for="Weight" class="form-label small fw-semibold">Kg</label>
+                    <input asp-for="Weight" type="number" step="0.1" class="form-control calc-trigger" id="w" value="1.5" required />
+                </div>
+                <div class="col-3">
+                    <label asp-for="Width" class="form-label small fw-semibold">En (cm)</label>
+                    <input asp-for="Width" type="number" step="0.1" class="form-control calc-trigger" id="wi" value="15" required />
+                </div>
+                <div class="col-3">
+                    <label asp-for="Height" class="form-label small fw-semibold">Boy (cm)</label>
+                    <input asp-for="Height" type="number" step="0.1" class="form-control calc-trigger" id="h" value="20" required />
+                </div>
+                <div class="col-3">
+                    <label asp-for="Length" class="form-label small fw-semibold">Yükseklik</label>
+                    <input asp-for="Length" type="number" step="0.1" class="form-control calc-trigger" id="l" value="10" required />
+                </div>
+            </div>
+
+            <div class="p-3 bg-light rounded border mb-3 d-flex justify-content-between align-items-center">
+                <span class="small text-muted">Tahmini Desi:</span>
+                <span class="fw-bold fs-5 text-primary" id="desiVal">1.00 desi</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                Kargo Talebini Oluştur
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function calc() {
+            const wi = parseFloat(document.getElementById('wi').value) || 0;
+            const h = parseFloat(document.getElementById('h').value) || 0;
+            const l = parseFloat(document.getElementById('l').value) || 0;
+            document.getElementById('desiVal').innerText = ((wi * h * l) / 3000).toFixed(2) + ' desi';
+        }
+        document.querySelectorAll('.calc-trigger').forEach(i => i.addEventListener('input', calc));
+        calc();
+    </script>
+}

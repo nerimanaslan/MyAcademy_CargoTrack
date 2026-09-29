@@ -1,0 +1,141 @@
+@model CreateCargoDto
+@{
+    ViewData["Title"] = "Yeni Kargo Kabulü";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Yeni Kargo Kabulü</h2>
+        <p class="text-muted small mb-0">Gönderi bilgilerini girin; Desi, Fiyat ve SLA otomatik hesaplanacaktır.</p>
+    </div>
+    <a href="/Admin/Cargo/Index" class="btn btn-outline-secondary">&larr; Kargo Listesine Dön</a>
+</div>
+
+<form asp-action="Create" method="post" class="row g-4">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- Sender & Receiver Information -->
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">1. Gönderici & Alıcı Bilgileri</h5>
+
+            <div class="mb-3">
+                <label asp-for="SenderId" class="form-label fw-semibold">Gönderici Müşteri</label>
+                <select asp-for="SenderId" asp-items="ViewBag.Users" class="form-select" required>
+                    <option value="">-- Gönderici Seçin --</option>
+                </select>
+                <span asp-validation-for="SenderId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReceiverName" class="form-label fw-semibold">Alıcı Adı Soyadı</label>
+                <input asp-for="ReceiverName" class="form-control" placeholder="Örn: Ahmet Demir" required />
+                <span asp-validation-for="ReceiverName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReceiverPhone" class="form-label fw-semibold">Alıcı Telefonu</label>
+                <input asp-for="ReceiverPhone" class="form-control" placeholder="05XXXXXXXXX" required />
+                <span asp-validation-for="ReceiverPhone" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ReceiverAddress" class="form-label fw-semibold">Alıcı Teslimat Adresi</label>
+                <textarea asp-for="ReceiverAddress" class="form-control" rows="3" placeholder="Mahalle, Cadde, Sokak, No, Daire, İlçe/Şehir..." required></textarea>
+                <span asp-validation-for="ReceiverAddress" class="text-danger small"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logistics, Package Dimensions & Pricing -->
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">2. Lojistik ve Paket Bilgileri</h5>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="OriginBranchId" class="form-label fw-semibold">Çıkış Şubesi</label>
+                    <select asp-for="OriginBranchId" asp-items="ViewBag.Branches" class="form-select" id="originBranch" required>
+                        <option value="">-- Çıkış Şubesi Seçin --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DestinationBranchId" class="form-label fw-semibold">Varış Şubesi</label>
+                    <select asp-for="DestinationBranchId" asp-items="ViewBag.Branches" class="form-select" id="destinationBranch" required>
+                        <option value="">-- Varış Şubesi Seçin --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CargoType" class="form-label fw-semibold">Gönderi Hizmet Tipi</label>
+                <select asp-for="CargoType" class="form-select" id="cargoType">
+                    <option value="1">Standart Gönderi</option>
+                    <option value="2">Express / Hızlı Teslimat (1.5x)</option>
+                    <option value="3">Hassas / Kırılabilir Kargo (+25 TL)</option>
+                    <option value="4">Ağır Yük / Palet</option>
+                    <option value="5">Aynı Gün Teslimat (2.0x)</option>
+                </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-6 col-md-3">
+                    <label asp-for="Weight" class="form-label fw-semibold small">Ağırlık (kg)</label>
+                    <input asp-for="Weight" type="number" step="0.1" class="form-control calc-trigger" id="weight" value="2.0" required />
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Width" class="form-label fw-semibold small">En (cm)</label>
+                    <input asp-for="Width" type="number" step="0.1" class="form-control calc-trigger" id="width" value="20" required />
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Height" class="form-label fw-semibold small">Boy (cm)</label>
+                    <input asp-for="Height" type="number" step="0.1" class="form-control calc-trigger" id="height" value="25" required />
+                </div>
+                <div class="col-6 col-md-3">
+                    <label asp-for="Length" class="form-label fw-semibold small">Yükseklik (cm)</label>
+                    <input asp-for="Length" type="number" step="0.1" class="form-control calc-trigger" id="length" value="15" required />
+                </div>
+            </div>
+
+            <!-- Desi & Formula Box -->
+            <div class="p-3 bg-light rounded border mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-muted">Dinamik Desi (En × Boy × Yükseklik / 3000):</div>
+                        <div class="fw-bold fs-5 text-dark" id="desiDisplay">2.50 desi</div>
+                    </div>
+                    <span class="badge bg-secondary">Otomatik Hesaplanır</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CustomPrice" class="form-label fw-semibold">Özel Fiyat (Boş bırakılırsa dinamik hesaplanır)</label>
+                <input asp-for="CustomPrice" type="number" step="0.01" class="form-control" placeholder="Otomatik Fiyatlandırma için boş bırakın" />
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+                <button type="submit" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-center gap-2">
+                    <span class="material-symbols-outlined">send</span>
+                    Kargoyu Kabul Et & Takip Numarası Oluştur
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function updateDesi() {
+            const w = parseFloat(document.getElementById('width').value) || 0;
+            const h = parseFloat(document.getElementById('height').value) || 0;
+            const l = parseFloat(document.getElementById('length').value) || 0;
+            const desi = (w * h * l) / 3000;
+            document.getElementById('desiDisplay').innerText = desi.toFixed(2) + ' desi';
+        }
+
+        document.querySelectorAll('.calc-trigger').forEach(input => {
+            input.addEventListener('input', updateDesi);
+        });
+        updateDesi();
+    </script>
+}

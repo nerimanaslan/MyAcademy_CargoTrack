@@ -1,0 +1,87 @@
+@model ResultCargoPriceDto
+@{
+    ViewData["Title"] = "Dinamik Fiyatlandırma Kuralları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Dinamik Fiyatlandırma Politikası</h2>
+        <p class="text-muted small mb-0">Desi, mesafe ve ek hizmetlere göre dinamik fiyat hesaplama parametreleri</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card card-stat bg-white p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Parametreleri Güncelle</h5>
+            <form asp-action="Update" method="post">
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Politika İsmi</label>
+                    <input type="text" name="Name" class="form-control" value="@Model.Name" required />
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Baz Ücret (TL)</label>
+                        <input type="number" step="0.5" name="BasePrice" class="form-control" value="@Model.BasePrice" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Kg Başına Ücret (TL)</label>
+                        <input type="number" step="0.5" name="PerKgRate" class="form-control" value="@Model.PerKgRate" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Desi Başına Ücret (TL)</label>
+                        <input type="number" step="0.5" name="PerDesiRate" class="form-control" value="@Model.PerDesiRate" required />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Şehirlerarası Çarpan</label>
+                        <input type="number" step="0.05" name="InterCityMultiplier" class="form-control" value="@Model.InterCityMultiplier" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Express Çarpanı</label>
+                        <input type="number" step="0.05" name="ExpressMultiplier" class="form-control" value="@Model.ExpressMultiplier" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Aynı Gün Çarpanı</label>
+                        <input type="number" step="0.05" name="SameDayMultiplier" class="form-control" value="@Model.SameDayMultiplier" required />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Hassas Kargo Ek Hizmet Bedeli (TL)</label>
+                    <input type="number" step="1" name="FragileHandlingFee" class="form-control" value="@Model.FragileHandlingFee" required />
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary d-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined fs-6">save</span>
+                        Fiyatlandırma Ayarlarını Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Hesaplama Formülü & Bilgiler</h5>
+            <div class="alert alert-info py-2 small">
+                <strong>Desi Formülü:</strong><br />
+                <code>Desi = En (cm) × Boy (cm) × Yükseklik (cm) / 3000</code>
+            </div>
+            <p class="small text-muted mb-2">
+                Sistem, kargonun fiziki ağırlığı (kg) ile hacimsel ağırlığı (desi) değerlerinden hangisi daha büyükse o değeri baz alarak faturalandırır.
+            </p>
+            <ul class="small text-muted ps-3">
+                <li>Şehir içi kargolarda sadece baz ücret + ağırlık/desi uygulanır.</li>
+                <li>Şehirlerarası kargolarda toplam fiyata <strong>%@((Model.InterCityMultiplier - 1.0m) * 100)</strong> oranında mesafe çarpanı eklenir.</li>
+                <li>Hızlı / Express gönderilerde SLA süresi 1 gün erkene çekilir.</li>
+            </ul>
+        </div>
+    </div>
+</div>

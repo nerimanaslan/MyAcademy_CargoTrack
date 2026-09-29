@@ -1,0 +1,221 @@
+@model PerformanceReportDto
+@{
+    ViewData["Title"] = "Performans & SLA Raporları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Operasyonel Performans & SLA Raporları</h2>
+        <p class="text-muted small mb-0">Şube işlem hacimleri, zamanında teslimat oranları, personel verimliliği ve iade istatistikleri</p>
+    </div>
+</div>
+
+<!-- 5 Top Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-primary">
+            <div class="small text-muted fw-semibold">En Çok Gönderen Şube</div>
+            <div class="fs-5 fw-bold text-dark mt-1">@Model.TopOriginBranch</div>
+            <div class="text-muted small">@Model.TopOriginCount kargo çıkışı</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-info">
+            <div class="small text-muted fw-semibold">En Çok Teslim Eden</div>
+            <div class="fs-5 fw-bold text-dark mt-1">@Model.TopDestinationBranch</div>
+            <div class="text-muted small">@Model.TopDestinationCount varış kargosu</div>
+        </div>
+    </div>
+    <div class="col-md-4 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-success">
+            <div class="small text-muted fw-semibold">Zamanında Teslimat (SLA)</div>
+            <div class="fs-3 fw-bold text-success mt-1">%@Model.OnTimeDeliveryRate</div>
+            <div class="text-muted small">SLA başarısı</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-warning">
+            <div class="small text-muted fw-semibold">Ortalama Teslimat Süresi</div>
+            <div class="fs-3 fw-bold text-dark mt-1">@Model.AverageDeliveryTimeHours saat</div>
+            <div class="text-muted small">Gönderi kabulden teslimata</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-danger">
+            <div class="small text-muted fw-semibold">Toplam İade Oranı</div>
+            <div class="fs-3 fw-bold text-danger mt-1">%@Model.ReturnRate</div>
+            <div class="text-muted small">3 deneme sonunda iadeler</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- GRAFİKLER BÖLÜMÜ -->
+    <div class="row g-4 mb-4">
+        <!-- Çubuk Grafiği: Şube İşlem Hacimleri -->
+        <div class="col-lg-8">
+            <div class="card card-stat bg-white p-4 h-100 shadow-sm border-0">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Şubelere Göre Günlük Hacim</h5>
+                <canvas id="volumeChart" height="100"></canvas>
+            </div>
+        </div>
+
+        <!-- Pasta Grafiği: Genel SLA (Zamanında Teslimat) -->
+        <div class="col-lg-4">
+            <div class="card card-stat bg-white p-4 h-100 shadow-sm border-0">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Genel SLA Başarısı</h5>
+                <canvas id="slaChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Branch Volumes & Success Rates -->
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Şubelere Göre İşlem Hacmi & Başarı Oranı</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Şube</th>
+                            <th>Toplam Hacim</th>
+                            <th>Teslimat Başarısı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in Model.BranchDailyVolumes)
+                        {
+                            <tr>
+                                <td class="fw-bold">@b.BranchName</td>
+                                <td>@b.DailyVolume kargo</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar @(b.SuccessRate > 90 ? "bg-success" : b.SuccessRate > 75 ? "bg-warning" : "bg-danger")" style="width: @b.SuccessRate%"></div>
+                                        </div>
+                                        <span class="small fw-semibold">%@b.SuccessRate</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Delayed Branches -->
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 h-100">
+            <h5 class="fw-bold mb-3 border-bottom pb-2 text-danger">En Fazla Geciken Kargoya Sahip Şubeler</h5>
+            @if (Model.TopDelayedBranches.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Şube</th>
+                                <th>Geciken Kargo</th>
+                                <th>Gecikme Oranı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in Model.TopDelayedBranches)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@d.BranchName</td>
+                                    <td><span class="badge bg-danger">@d.DelayedCount kargo</span></td>
+                                    <td>%@d.DelayRate</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success mt-2">
+                    <span class="material-symbols-outlined align-middle">verified</span>
+                    Tebrikler! Şu an hiçbir şubede SLA gecikmesi yaşayan kargo bulunmamaktadır.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Employee Performances -->
+    <div class="col-12">
+        <div class="card card-stat bg-white p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Personel Bazında Teslimat ve İşlem Verimliliği</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Personel</th>
+                            <th>Bağlı Birim</th>
+                            <th>Başarılı Teslimat</th>
+                            <th>Başarısız Deneme / İstisna</th>
+                            <th>Toplam Operasyon</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var emp in Model.EmployeePerformances)
+                        {
+                            <tr>
+                                <td class="fw-bold">@emp.EmployeeName</td>
+                                <td>@emp.BranchName</td>
+                                <td><span class="badge bg-success">@emp.SuccessfulDeliveries adet</span></td>
+                                <td><span class="badge bg-danger">@emp.FailedAttempts adet</span></td>
+                                <td class="fw-bold">@emp.DailyOperationCount işlem</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Chart.js Kütüphanesi ve Grafik Ayarları -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Şube Hacim Grafiği (Bar Chart) Verileri
+    const branchNames = @Html.Raw(Json.Serialize(Model.BranchDailyVolumes.Select(b => b.BranchName)));
+    const branchVolumes = @Html.Raw(Json.Serialize(Model.BranchDailyVolumes.Select(b => b.DailyVolume)));
+
+    const ctxVolume = document.getElementById('volumeChart').getContext('2d');
+    new Chart(ctxVolume, {
+        type: 'bar',
+        data: {
+            labels: branchNames,
+            datasets: [{
+                label: 'Günlük Kargo Hacmi',
+                data: branchVolumes,
+                backgroundColor: '#0d6efd',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 2. SLA Pasta Grafiği Verileri (Pie Chart)
+    const slaRate = @Model.OnTimeDeliveryRate;
+    const delayedRate = 100 - slaRate;
+
+    const ctxSla = document.getElementById('slaChart').getContext('2d');
+    new Chart(ctxSla, {
+        type: 'doughnut', // İstersen 'pie' da yapabilirsin, doughnut daha modern duruyor
+        data: {
+            labels: ['Zamanında Teslim', 'Geciken'],
+            datasets: [{
+                data: [slaRate, delayedRate],
+                backgroundColor: ['#198754', '#dc3545'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '60%' // Ortası delik modern görünüm için
+        }
+    });
+</script>

@@ -1,0 +1,123 @@
+@model List<ResultCargoDto>
+@{
+    ViewData["Title"] = "Şube Kargoları";
+    int pageNumber = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    string search = ViewBag.CurrentSearch ?? "";
+    CargoStatus? currentStatus = ViewBag.CurrentStatus;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Şube Kargoları</h2>
+        <p class="text-muted small mb-0">Bağlı olduğunuz şubeye ait gelen, giden ve dağıtımdaki tüm gönderiler</p>
+    </div>
+    <a href="/Manager/Cargo/OutForDelivery" class="btn btn-warning text-dark fw-semibold d-flex align-items-center gap-1">
+        <span class="material-symbols-outlined fs-6">verified_user</span>
+        Dağıtım Listesi & Kod Doğrulama
+    </a>
+</div>
+
+<!-- Filter & Search Bar -->
+<div class="card card-stat bg-white p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><span class="material-symbols-outlined fs-6">search</span></span>
+                <input type="text" name="search" class="form-control" placeholder="Takip No veya Alıcı ara..." value="@search" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+                <option value="">-- Tüm Durumlar --</option>
+                @foreach (CargoStatus st in Enum.GetValues(typeof(CargoStatus)))
+                {
+                    <option value="@st" selected="@(currentStatus == st ? "selected" : null)">@CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(st)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-dark w-100">Filtrele</button>
+            <a href="/Manager/Cargo/Index" class="btn btn-outline-secondary">Temizle</a>
+        </div>
+    </form>
+</div>
+
+<!-- Cargo Table -->
+<div class="card card-stat bg-white overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Takip No</th>
+                    <th>Alıcı</th>
+                    <th>Çıkış Şubesi</th>
+                    <th>Varış Şubesi</th>
+                    <th>Ağırlık/Desi</th>
+                    <th>Durum</th>
+                    <th>Tahmini Teslimat</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a href="/Manager/Cargo/Detail/@item.Id" class="fw-bold font-monospace text-primary text-decoration-none">
+                                    @item.TrackCode
+                                </a>
+                            </td>
+                            <td>
+                                <div>@item.ReceiverName</div>
+                                <div class="text-muted small" style="font-size: 11px;">@item.ReceiverPhone</div>
+                            </td>
+                            <td>@item.OriginBranchName</td>
+                            <td>@item.DestinationBranchName</td>
+                            <td><span class="badge bg-light text-dark border">@item.Weight kg / @item.Desi desi</span></td>
+                            <td>
+                                <span class="badge @(item.CargoStatus == CargoStatus.Delivered ? "bg-success" : item.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : item.CargoStatus == CargoStatus.DeliveryFailed ? "bg-danger" : "bg-primary")">
+                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(item.CargoStatus)
+                                </span>
+                                @if (item.IsDelayed)
+                                {
+                                    <span class="badge bg-danger mt-1 d-block">Gecikmeli</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="small">@item.EstimatedDeliveryDate.ToString("dd.MM.yyyy")</div>
+                            </td>
+                            <td class="text-end">
+                                <a href="/Manager/Cargo/Detail/@item.Id" class="btn btn-sm btn-outline-primary">Detay / İşlem</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">Şubenize ait kargo bulunamadı.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1)
+    {
+        <div class="p-3 border-top d-flex justify-content-between align-items-center">
+            <span class="small text-muted">Sayfa @pageNumber / @totalPages</span>
+            <ul class="pagination pagination-sm mb-0">
+                @for (int p = 1; p <= totalPages; p++)
+                {
+                    <li class="page-item @(p == pageNumber ? "active" : "")">
+                        <a class="page-link" href="/Manager/Cargo/Index?page=@p&search=@search&status=@currentStatus">@p</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>

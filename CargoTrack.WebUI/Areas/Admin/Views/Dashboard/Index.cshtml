@@ -1,0 +1,237 @@
+@model AdminDashboardDto
+@{
+    ViewData["Title"] = "Genel Sistem Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Genel Sistem Dashboard</h2>
+        <p class="text-muted small mb-0">Tüm kargo operasyonları, şube hacimleri ve anlık sistem istatistikleri</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/Admin/Cargo/Create" class="btn btn-primary d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined">add_circle</span>
+            Yeni Kargo Kabul Et
+        </a>
+        <a href="/Admin/Report/Index" class="btn btn-outline-secondary d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined">insights</span>
+            Performans Raporları
+        </a>
+    </div>
+</div>
+
+<!-- 6 KPI Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-primary">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Toplam Kargo</div>
+                    <div class="fs-3 fw-bold text-dark mt-1">@Model.TotalCargos</div>
+                </div>
+                <span class="material-symbols-outlined text-primary fs-2">inventory_2</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Sistemdeki tüm kayıtlar</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-info">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Aktif Taşıma</div>
+                    <div class="fs-3 fw-bold text-info mt-1">@Model.ActiveCargos</div>
+                </div>
+                <span class="material-symbols-outlined text-info fs-2">local_shipping</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Şube & Transfer hattında</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-danger">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Geciken Kargo</div>
+                    <div class="fs-3 fw-bold text-danger mt-1">@Model.DelayedCargos</div>
+                </div>
+                <span class="material-symbols-outlined text-danger fs-2">schedule</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">SLA süresini aşanlar</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-success">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Teslimat Oranı</div>
+                    <div class="fs-3 fw-bold text-success mt-1">%@Model.DeliverySuccessRate</div>
+                </div>
+                <span class="material-symbols-outlined text-success fs-2">task_alt</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Başarıyla tamamlanan</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-warning">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Aktif Şube</div>
+                    <div class="fs-3 fw-bold text-warning mt-1">@Model.ActiveBranchesCount</div>
+                </div>
+                <span class="material-symbols-outlined text-warning fs-2">store</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Hizmet veren şubeler</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-secondary">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Aktif Personel</div>
+                    <div class="fs-3 fw-bold text-secondary mt-1">@Model.ActiveEmployeesCount</div>
+                </div>
+                <span class="material-symbols-outlined text-secondary fs-2">group</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Kurye & Operasyon</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row: 7 Days Traffic & Status Breakdown -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card card-stat p-4 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Son 7 Günlük Kargo Trafiği</h5>
+                <span class="badge bg-light text-dark border">Günlük Gönderi Hacmi</span>
+            </div>
+            <div style="height: 280px;">
+                <canvas id="trafficChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card card-stat p-4 bg-white h-100">
+            <h5 class="fw-bold mb-3">Durum Dağılımı</h5>
+            <div style="height: 280px; position: relative;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row: Top 5 Branches & Recent Cargos -->
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card card-stat p-4 bg-white h-100">
+            <h5 class="fw-bold mb-3">En Yoğun 5 Şube</h5>
+            <div class="d-flex flex-col gap-3">
+                @foreach (var b in Model.Top5Branches)
+                {
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small fw-semibold mb-1">
+                            <span>@b.BranchName (@b.CityName)</span>
+                            <span class="text-muted">@b.CargoCount kargo (%@b.Percentage)</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @b.Percentage%"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card card-stat p-4 bg-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Son Hareket Gören Kargolar</h5>
+                <a href="/Admin/Cargo/Index" class="btn btn-sm btn-link">Tümünü Gör &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Takip No</th>
+                            <th>Güzergah</th>
+                            <th>Durum</th>
+                            <th>Tarih</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.RecentCargos)
+                        {
+                            <tr>
+                                <td class="fw-bold font-monospace">@c.TrackCode</td>
+                                <td>@c.OriginBranchName &rarr; @c.DestinationBranchName</td>
+                                <td>
+                                    <span class="badge @(c.CargoStatus == CargoStatus.Delivered ? "bg-success" : c.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : "bg-primary")">
+                                        @c.CargoStatus
+                                    </span>
+                                    @if (c.IsDelayed)
+                                    {
+                                        <span class="badge bg-danger">Gecikti</span>
+                                    }
+                                </td>
+                                <td>@c.ShipmentDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <a href="/Admin/Cargo/Detail/@c.Id" class="btn btn-sm btn-outline-secondary py-0 px-2">Detay</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 1. Traffic Chart
+        const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+        new Chart(trafficCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TrafficDays)),
+                datasets: [{
+                    label: 'Gönderi Sayısı',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TrafficCounts)),
+                    borderColor: '#0052cc',
+                    backgroundColor: 'rgba(0, 82, 204, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0052cc'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+
+        // 2. Status Chart
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusLabels)),
+                datasets: [{
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusCounts)),
+                    backgroundColor: ['#6c757d', '#0d6efd', '#fd7e14', '#6610f2', '#ffc107', '#198754', '#dc3545', '#e83e8c', '#20c997']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                }
+            }
+        });
+    </script>
+}

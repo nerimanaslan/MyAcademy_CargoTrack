@@ -1,0 +1,132 @@
+@model CalculatePriceDto
+@{
+    ViewData["Title"] = "Kargo Fiyat Hesaplama";
+    var result = ViewBag.Result as CargoTrack.DTO.DTOs.CargoPriceDtos.PriceCalculationResultDto;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Dinamik Kargo Fiyatı ve SLA Hesaplama</h2>
+        <p class="text-muted small mb-0">Paketinizin boyutlarını ve güzergahını girerek tahmini teslimat süresi ve taşıma ücretini öğrenin.</p>
+    </div>
+    <a href="/User/Dashboard/Index" class="btn btn-outline-secondary">&larr; Panelime Dön</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Hesaplama Parametreleri</h5>
+            <form asp-action="CalculatePrice" method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Çıkış Şubesi</label>
+                        <select asp-for="OriginBranchId" asp-items="ViewBag.Branches" class="form-select" required>
+                            <option value="">-- Şube Seçin --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Varış Şubesi</label>
+                        <select asp-for="DestinationBranchId" asp-items="ViewBag.Branches" class="form-select" required>
+                            <option value="">-- Şube Seçin --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Hizmet Tipi</label>
+                    <select asp-for="CargoType" class="form-select">
+                        <option value="1">Standart Gönderi</option>
+                        <option value="2">Express / Hızlı Teslimat (1.5x)</option>
+                        <option value="3">Hassas Kargo (+25 TL)</option>
+                        <option value="5">Aynı Gün Teslimat (2.0x)</option>
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-3">
+                        <label class="form-label small fw-semibold">Ağırlık (kg)</label>
+                        <input asp-for="Weight" type="number" min="0.1" step="0.1" class="form-control" required />
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label small fw-semibold">En (cm)</label>
+                        <input asp-for="Width" type="number" min="0.1" step="0.1" class="form-control" required />
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label small fw-semibold">Boy (cm)</label>
+                        <input asp-for="Length" type="number" min="0.1" step="0.1" class="form-control" required />
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label small fw-semibold">Yükseklik (cm)</label>
+                        <input asp-for="Height" type="number" min="0.1" step="0.1" class="form-control" required />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Fiyat & SLA Hesapla</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        @if (result != null)
+        {
+            <div class="card card-stat bg-white p-4 h-100 border-start border-4 border-success">
+                <h5 class="fw-bold mb-3 border-bottom pb-2 text-success">Hesaplama Sonucu</h5>
+
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                    <div>
+                        <div class="text-muted small">Tahmini Toplam Ücret:</div>
+                        <div class="fs-2 fw-bold text-success">@result.TotalPrice.ToString("C2")</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="text-muted small">Tahmini Teslimat Süresi (SLA):</div>
+                        <div class="fs-4 fw-bold text-dark">@(result.EstimatedDays == 0 ? "Aynı Gün" : $"{result.EstimatedDays} İş Günü")</div>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush small mb-3">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Hacimsel Ağırlık (Desi):</span>
+                        <strong>@result.Desi desi</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Ücrete Esas Ağırlık (Max(Kg, Desi)):</span>
+                        <strong>@result.ChargeableWeight kg</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Baz Taşıma Ücreti:</span>
+                        <span>@result.BasePrice.ToString("C2")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Ağırlık / Desi Farkı:</span>
+                        <span>@result.WeightFee.ToString("C2")</span>
+                    </li>
+                    @if (result.IsInterCity)
+                    {
+                        <li class="list-group-item d-flex justify-content-between px-0 text-primary">
+                            <span>Şehirlerarası Mesafe Farkı:</span>
+                            <span>@result.DistanceFee.ToString("C2")</span>
+                        </li>
+                    }
+                    @if (result.ExtraServiceFee > 0)
+                    {
+                        <li class="list-group-item d-flex justify-content-between px-0 text-warning text-dark">
+                            <span>Ek Hizmet / Öncelik Bedeli:</span>
+                            <span>@result.ExtraServiceFee.ToString("C2")</span>
+                        </li>
+                    }
+                </ul>
+
+                <a href="/User/Shipment/SendCargo" class="btn btn-success mt-auto">Hemen Bu Bilgilerle Gönderi Oluştur &rarr;</a>
+            </div>
+        }
+        else
+        {
+            <div class="card card-stat bg-white p-4 h-100 d-flex flex-col justify-content-center align-items-center text-center text-muted">
+                <span class="material-symbols-outlined fs-1 text-secondary mb-2">price_check</span>
+                <h6>Hesaplama Sonucu</h6>
+                <p class="small">Sol taraftaki formu doldurup "Hesapla" butonuna bastığınızda detaylı ücret kırılımı ve SLA süresi burada görüntülenecektir.</p>
+            </div>
+        }
+    </div>
+</div>
