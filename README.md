@@ -5,7 +5,7 @@ Bu proje, bir kargonun şubeye teslim edilmesinden alıcıya ulaşmasına kadar 
 Projeyi geliştirirken sadece basit veri ekle/sil (CRUD) işlemleri yapmak yerine, gerçek dünyadaki kargo işleyişini ve iş kurallarını (Business Logic) yansıtmaya odaklandım. 
 
 ## 📸 Ekran Görüntüleri
-*(Buraya projeye ait görseller eklenecektir)*
+
 - Anasayfa
 - <img width="948" height="470" alt="2 5" src="https://github.com/user-attachments/assets/6a357b75-1967-455f-b575-e65cca0e6ff6" />
 - Kargo Takip Ekranı
