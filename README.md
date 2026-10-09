@@ -6,12 +6,13 @@ Projeyi geliştirirken sadece basit veri ekle/sil (CRUD) işlemleri yapmak yerin
 
 ## 📸 Ekran Görüntüleri
 
-- Anasayfa
-- <img width="948" height="470" alt="2 5" src="https://github.com/user-attachments/assets/6a357b75-1967-455f-b575-e65cca0e6ff6" />
+
 - Kargo Takip Ekranı
-- <img width="634" height="493" alt="3" src="https://github.com/user-attachments/assets/e1a9a5af-ac10-4c55-a1a4-eee038f73dba" />
+- <img width="929" height="458" alt="1" src="https://github.com/user-attachments/assets/075901cd-e41d-46dc-af46-3cf886f2298e" />
+
 - Admin / Şube Müdürü Paneli
-- <img width="953" height="493" alt="4" src="https://github.com/user-attachments/assets/05db0fdf-fa34-4e05-8210-7f4d7c579767" />
+-<img width="947" height="490" alt="3" src="https://github.com/user-attachments/assets/6290c153-b722-4c4e-b577-c9d079c82b09" />
+
 
 
 ## 🚀 Öne Çıkan Özellikler
