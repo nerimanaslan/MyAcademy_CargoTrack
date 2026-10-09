@@ -1,0 +1,65 @@
+@model ManagerDashboardDto
+
+<div class="card card-stat p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-white">İşlem Bekleyen Kargolar</h5>
+        <a href="/Manager/Cargo/Index" class="btn btn-sm btn-link text-info text-decoration-none">Tümünü İncele &rarr;</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead>
+                <tr>
+                    <th>Takip No</th>
+                    <th>Alıcı</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ActionRequiredCargos != null && Model.ActionRequiredCargos.Any())
+                {
+                    @foreach (var c in Model.ActionRequiredCargos)
+                    {
+                        <tr>
+                            <td class="fw-bold font-monospace text-info">@c.TrackCode</td>
+                            <td>
+                                <div class="text-white">@c.ReceiverName</div>
+                                <div class="text-muted" style="font-size: 11px;">@c.ReceiverPhone</div>
+                            </td>
+                            <td>
+                                <span class="badge @(c.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : c.CargoStatus == CargoStatus.DeliveryFailed ? "bg-danger" : "bg-primary")">
+                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(c.CargoStatus)
+                                </span>
+                            </td>
+                            <td>
+                                @if (c.CargoStatus == CargoStatus.AtDestinationBranch)
+                                {
+                                    <form asp-action="UpdateStatus" asp-controller="Cargo" method="post" class="d-inline">
+                                        <input type="hidden" name="CargoId" value="@c.Id" />
+                                        <input type="hidden" name="NewStatus" value="@CargoStatus.OutForDelivery" />
+                                        <input type="hidden" name="LocationName" value="@Model.BranchName" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning text-dark">Dağıtıma Çıkar</button>
+                                    </form>
+                                }
+                                else if (c.CargoStatus == CargoStatus.OutForDelivery)
+                                {
+                                    <a href="/Manager/Cargo/OutForDelivery?search=@c.TrackCode" class="btn btn-sm btn-success">Teslim Et</a>
+                                }
+                                else
+                                {
+                                    <a href="/Manager/Cargo/Detail/@c.Id" class="btn btn-sm btn-outline-secondary">Detay</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">Şu an acil işlem bekleyen kargo bulunmuyor.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

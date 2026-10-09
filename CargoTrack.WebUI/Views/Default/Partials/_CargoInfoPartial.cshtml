@@ -1,48 +1,48 @@
-﻿@model CargoTrack.DTO.DTOs.Cargos.PublicCargoTrackingDto
+@model CargoTrack.DTO.DTOs.Cargos.PublicCargoTrackingDto
 
 <!-- Gönderici / Alıcı Kartları -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 p-5 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+    <div class="bg-[#0d1527] rounded-xl shadow-lg border border-[#1e2f58] p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-cyan-400">
             <span class="material-symbols-outlined">person</span>
         </div>
         <div>
-            <p class="font-label-caps text-label-caps text-gray-500 mb-1 uppercase">Gönderici</p>
-            <p class="font-semibold text-gray-800">@Model.MaskedSenderName</p>
-            <p class="text-sm text-gray-500">@Model.SenderLocation</p>
+            <p class="text-xs text-slate-400 mb-1 uppercase font-semibold">Gönderici</p>
+            <p class="font-semibold text-white">@Model.MaskedSenderName</p>
+            <p class="text-sm text-slate-400">@Model.SenderLocation</p>
         </div>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 p-5 flex items-center gap-4">
-        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+    <div class="bg-[#0d1527] rounded-xl shadow-lg border border-[#1e2f58] p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-cyan-400">
             <span class="material-symbols-outlined">person</span>
         </div>
         <div>
-            <p class="font-label-caps text-label-caps text-gray-500 mb-1 uppercase">Alıcı</p>
-            <p class="font-semibold text-gray-800">@Model.MaskedReceiverName</p>
-            <p class="text-sm text-gray-500">@Model.ReceiverLocation</p>
+            <p class="text-xs text-slate-400 mb-1 uppercase font-semibold">Alıcı</p>
+            <p class="font-semibold text-white">@Model.MaskedReceiverName</p>
+            <p class="text-sm text-slate-400">@Model.ReceiverLocation</p>
         </div>
     </div>
 </div>
 
 <!-- Kargo Detayları (Ağırlık vb.) -->
-<div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 p-6 mt-6">
-    <h3 class="font-headline-md text-xl text-primary-container mb-4">Kargo Bilgileri</h3>
+<div class="bg-[#0d1527] rounded-xl shadow-lg border border-[#1e2f58] p-6 mt-6">
+    <h3 class="font-headline-md text-xl text-white font-bold mb-4">Kargo Bilgileri</h3>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-sm text-gray-500 mb-1">Ağırlık/Desi</p>
-            <p class="font-semibold text-gray-800">@Model.WeightFormatted</p>
+        <div class="bg-[#060b17] border border-[#1e2f58] rounded-lg p-4">
+            <p class="text-xs text-slate-400 mb-1">Ağırlık/Desi</p>
+            <p class="font-semibold text-cyan-300 font-mono">@Model.WeightFormatted</p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-sm text-gray-500 mb-1">Gönderi Tipi</p>
-            <p class="font-semibold text-gray-800">@Model.CargoTypeDescription</p>
+        <div class="bg-[#060b17] border border-[#1e2f58] rounded-lg p-4">
+            <p class="text-xs text-slate-400 mb-1">Gönderi Tipi</p>
+            <p class="font-semibold text-white">@Model.CargoTypeDescription</p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-sm text-gray-500 mb-1">Çıkış Şubesi</p>
-            <p class="font-semibold text-gray-800">@Model.OriginBranchName</p>
+        <div class="bg-[#060b17] border border-[#1e2f58] rounded-lg p-4">
+            <p class="text-xs text-slate-400 mb-1">Çıkış Şubesi</p>
+            <p class="font-semibold text-white">@Model.OriginBranchName</p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-            <p class="text-sm text-gray-500 mb-1">Varış Şubesi</p>
-            <p class="font-semibold text-gray-800">@Model.DestinationBranchName</p>
+        <div class="bg-[#060b17] border border-[#1e2f58] rounded-lg p-4">
+            <p class="text-xs text-slate-400 mb-1">Varış Şubesi</p>
+            <p class="font-semibold text-amber-300 font-medium">@Model.DestinationBranchName</p>
         </div>
     </div>
 </div>

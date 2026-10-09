@@ -1,0 +1,53 @@
+@using CargoTrack.Entity.Entities.Enums
+@model List<CargoTrack.DTO.DTOs.Cargos.ResultCargoDto>
+
+<div class="card card-stat p-4 bg-white h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Son Hareket Gören Kargolar</h5>
+        <a href="/Admin/Cargo/Index" class="btn btn-sm btn-link text-info text-decoration-none">Tümünü Gör &rarr;</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+                <tr>
+                    <th>Takip No</th>
+                    <th>Güzergah</th>
+                    <th>Durum</th>
+                    <th>Tarih</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold font-monospace text-info">@c.TrackCode</td>
+                            <td>@c.OriginBranchName &rarr; @c.DestinationBranchName</td>
+                            <td>
+                                <span class="badge @(c.CargoStatus == CargoStatus.Delivered ? "bg-success" : c.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : "bg-primary")">
+                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(c.CargoStatus)
+                                </span>
+                                @if (c.IsDelayed)
+                                {
+                                    <span class="badge bg-danger">Gecikti</span>
+                                }
+                            </td>
+                            <td class="text-muted font-monospace">@c.ShipmentDate.ToString("dd.MM.yyyy")</td>
+                            <td class="text-end">
+                                <a href="/Admin/Cargo/Detail/@c.Id" class="btn btn-sm btn-outline-secondary py-0 px-2">Detay</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-3 text-muted">Kayıt bulunamadı.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

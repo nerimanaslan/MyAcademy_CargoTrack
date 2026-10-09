@@ -1,0 +1,28 @@
+@model ManagerDashboardDto
+
+<div class="card card-stat p-4 h-100">
+    <h5 class="fw-bold mb-3 border-bottom pb-2 text-white border-secondary">Şubedeki Son Hareketler</h5>
+    <div class="timeline">
+        @if (Model.RecentMovements != null && Model.RecentMovements.Any())
+        {
+            @foreach (var m in Model.RecentMovements)
+            {
+                <div class="border-start border-3 border-info ps-3 pb-3 position-relative">
+                    <div class="small fw-semibold text-light">@m.Description</div>
+                    <div class="text-muted" style="font-size: 11px;">
+                        <span class="material-symbols-outlined align-middle" style="font-size: 13px;">schedule</span>
+                        @m.Timestamp.ToString("dd.MM.yyyy HH:mm")
+                        @if (!string.IsNullOrEmpty(m.EmployeeName))
+                        {
+                            <span>• İşlem: @m.EmployeeName</span>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted small">Henüz hareket kaydı yok.</p>
+        }
+    </div>
+</div>

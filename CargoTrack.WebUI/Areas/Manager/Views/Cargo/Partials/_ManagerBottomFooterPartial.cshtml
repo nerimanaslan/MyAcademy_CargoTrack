@@ -1,0 +1,20 @@
+@{
+    string branchName = ViewBag.BranchName as string ?? "Kadıköy Şubesi";
+}
+
+<footer class="bg-[#050914] border-t border-telemetry-border px-5 py-2 flex-none flex items-center justify-between text-[11px] text-slate-400 font-mono">
+    <div class="flex items-center space-x-4">
+        <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="text-slate-300 font-sans">@branchName Dağıtım Merkezi Online</span>
+        </span>
+        <span>•</span>
+        <span>Sunucu: <strong class="text-slate-200">tr-marmara-hub04.cargotrack.net</strong></span>
+        <span class="hidden md:inline">•</span>
+        <span class="hidden md:inline">API Latency: <strong class="text-emerald-400">18ms</strong></span>
+    </div>
+    <div class="flex items-center space-x-3 font-sans">
+        <span>CargoTrack Logistics Engine © 2026</span>
+        <a class="text-cyan-400 hover:underline" href="/Admin/Report/Index">Sistem Raporları</a>
+    </div>
+</footer>

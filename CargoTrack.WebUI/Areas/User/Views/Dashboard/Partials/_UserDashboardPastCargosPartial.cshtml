@@ -1,0 +1,47 @@
+@model UserDashboardDto
+
+<div class="card card-stat p-4">
+    <h5 class="fw-bold mb-3 border-bottom pb-2 text-white border-secondary">Geçmiş Teslimatlar</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead>
+                <tr>
+                    <th>Takip No</th>
+                    <th>Alıcı</th>
+                    <th>Durum</th>
+                    <th>Teslim Tarihi</th>
+                    <th class="text-end">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PastCargos != null && Model.PastCargos.Any())
+                {
+                    @foreach (var c in Model.PastCargos)
+                    {
+                        <tr>
+                            <td class="fw-bold font-monospace text-info">@c.TrackCode</td>
+                            <td class="text-white">@c.ReceiverName</td>
+                            <td>
+                                <span class="badge @(c.CargoStatus == CargoStatus.Delivered ? "bg-success" : "bg-secondary")">
+                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(c.CargoStatus)
+                                </span>
+                            </td>
+                            <td class="text-light">@(c.ArrivalDate?.ToString("dd MMMM yyyy") ?? "-")</td>
+                            <td class="text-end">
+                                <a href="/Default/CargoDetails?trackCode=@c.TrackCode" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                    Görüntüle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Geçmiş teslimat kaydınız bulunmamaktadır.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

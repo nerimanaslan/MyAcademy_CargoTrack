@@ -1,0 +1,26 @@
+@model List<CargoTrack.DTO.DTOs.DashboardDtos.BusiestBranchDto>
+
+<div class="card card-stat p-4 h-100">
+    <h5 class="fw-bold mb-3 text-white border-bottom pb-2 border-secondary">En Yoğun 5 Şube</h5>
+    <div class="d-flex flex-column gap-3">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var b in Model)
+            {
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small fw-semibold mb-1">
+                        <span class="text-light">@b.BranchName (@b.CityName)</span>
+                        <span class="text-info font-monospace">@b.CargoCount kargo (%@b.Percentage)</span>
+                    </div>
+                    <div class="progress" style="height: 8px; background-color: #1e293b;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: @b.Percentage%"></div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted small">Henüz şube verisi bulunamadı.</p>
+        }
+    </div>
+</div>

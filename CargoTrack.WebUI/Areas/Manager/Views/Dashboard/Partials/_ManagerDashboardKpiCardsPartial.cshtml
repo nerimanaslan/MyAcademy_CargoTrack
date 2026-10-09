@@ -1,0 +1,46 @@
+@model ManagerDashboardDto
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 border-start border-4 border-primary">
+            <div class="small text-muted fw-semibold">Bugün Gelen</div>
+            <div class="fs-3 fw-bold text-primary mt-1">@Model.TodayIncoming</div>
+            <div class="text-muted small">Varış şubesi burası</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 border-start border-4 border-info">
+            <div class="small text-muted fw-semibold">Bugün Çıkan</div>
+            <div class="fs-3 fw-bold text-info mt-1">@Model.TodayOutgoing</div>
+            <div class="text-muted small">Şubeden sevk edilen</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 border-start border-4 border-warning">
+            <div class="small text-muted fw-semibold">Dağıtımdaki</div>
+            <div class="fs-3 fw-bold text-warning mt-1">@Model.OutForDeliveryCount</div>
+            <div class="text-muted small">Kuryede / yolda</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 border-start border-4 border-success">
+            <div class="small text-muted fw-semibold">Bugün Teslim</div>
+            <div class="fs-3 fw-bold text-success mt-1">@Model.DeliveredCount</div>
+            <div class="text-muted small">Kod doğrulanıp teslim</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 border-start border-4 border-danger">
+            <div class="small text-muted fw-semibold">Geciken Kargo</div>
+            <div class="fs-3 fw-bold text-danger mt-1">@Model.DelayedCount</div>
+            <div class="text-muted small">SLA süresi aşılmış</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 border-start border-4 border-secondary">
+            <div class="small text-muted fw-semibold">Sorunlu / İade</div>
+            <div class="fs-3 fw-bold text-light mt-1">@Model.ProblematicCount</div>
+            <div class="text-muted small">Hata / İade süreci</div>
+        </div>
+    </div>
+</div>

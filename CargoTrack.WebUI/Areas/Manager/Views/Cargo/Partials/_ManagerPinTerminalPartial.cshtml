@@ -1,0 +1,106 @@
+@using CargoTrack.DTO.DTOs.Cargos
+@model ResultCargoDto
+
+@{
+    string branchName = ViewBag.BranchName as string ?? "Kadıköy Şubesi";
+    var employees = ViewBag.Employees as List<CargoTrack.DTO.DTOs.EmployeeDtos.ResultEmployeeDto> ?? new();
+}
+
+<div class="p-5 flex-1 flex flex-col justify-between">
+    <form asp-area="Manager" asp-controller="Cargo" asp-action="VerifyDelivery" method="post" class="bg-[#0f172a] border border-emerald-500/30 rounded-xl p-4 shadow-xl relative overflow-hidden">
+        <input type="hidden" name="CargoId" id="verifyCargoId" value="@(Model?.Id ?? Guid.Empty)" />
+        
+        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500"></div>
+        
+        <div class="flex items-center justify-between border-b border-telemetry-border pb-3 mb-3.5">
+            <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white leading-tight">Teslimat Doğrulama Terminali</h3>
+                    <span class="text-[10px] text-emerald-400 font-mono">Doğrulama Protokolü: OTP-PIN v3</span>
+                </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-950 border border-blue-500/40 text-blue-300">@branchName</span>
+        </div>
+
+        <!-- SMS Info Alert -->
+        <div class="bg-[#0b1c2d] border border-cyan-500/30 rounded-lg p-2.5 mb-4 flex items-start space-x-2.5">
+            <svg class="w-4 h-4 text-cyan-400 mt-0.5 flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+            <p class="text-xs text-cyan-200 leading-snug">
+                Alıcının telefonuna SMS ile gönderilen <strong class="text-white underline underline-offset-2">6 haneli güvenlik kodunu</strong> giriniz. Kodsuz kargo kesinlikle teslim edilemez.
+            </p>
+        </div>
+
+        <!-- 6-Pin Input -->
+        <div class="mb-4">
+            <div class="flex items-center justify-between text-xs text-slate-300 mb-1.5 font-medium">
+                <label for="DeliveryCodeInput">6 Haneli Güvenlik Kodu</label>
+                <span class="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+                    Güvenli Doğrulama
+                </span>
+            </div>
+            <input type="text" name="DeliveryCode" id="DeliveryCodeInput" maxlength="6" value="@(Model?.DeliveryPinCode ?? "")"
+                   placeholder="6 haneli kodu giriniz..."
+                   class="w-full text-center tracking-[12px] font-mono font-black text-2xl h-12 rounded-lg bg-[#060b17] border-2 border-emerald-500 text-emerald-400 shadow-glow-emerald focus:outline-none focus:ring-2 focus:ring-emerald-400" required />
+        </div>
+
+        <!-- Handover Details Form -->
+        <div class="space-y-3 text-xs">
+            <div>
+                <label class="block text-slate-300 font-medium mb-1">Teslim Alan Kişi</label>
+                <input name="ReceivedBy" id="verifyReceiverInput" class="w-full bg-[#070d1c] border border-telemetry-border text-slate-200 text-xs rounded-md px-3 py-2 font-semibold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" type="text" value="@(Model?.ReceiverName ?? "")" required />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1">Teslim Eden Personel</label>
+                    <select name="EmployeeId" class="w-full bg-[#070d1c] border border-telemetry-border text-slate-200 text-xs rounded-md px-3 py-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-medium">
+                        @foreach (var emp in employees)
+                        {
+                            <option value="@emp.Id">@emp.FullName (@emp.Title)</option>
+                        }
+                        @if (!employees.Any())
+                        {
+                            <option value="">Şube Personeli</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-medium mb-1">Açıklama / Not</label>
+                    <input name="Notes" class="w-full bg-[#070d1c] border border-telemetry-border text-slate-200 text-xs rounded-md px-3 py-2 focus:border-emerald-500" placeholder="Teslimat notu..." />
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-5 pt-3 border-t border-telemetry-border flex items-center justify-end space-x-2.5">
+            <button type="reset" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition border border-slate-700">
+                Temizle
+            </button>
+            <button type="submit" class="flex-1 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-glow-emerald transition flex items-center justify-center space-x-2 active:scale-98">
+                <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+                </svg>
+                <span>Kodu Onayla ve Teslimatı Bitir</span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Barcode & Digital Seal Strip -->
+    <div class="mt-4 pt-3 border-t border-telemetry-border/70 flex items-center justify-between text-[11px] text-slate-400">
+        <div class="font-mono">
+            <span class="block text-[9px] uppercase tracking-wider text-slate-500">Kargo Etiket Barkodu</span>
+            <div class="text-slate-300 tracking-[4px] text-sm font-bold font-mono">||| | |||| ||| || | |||| ||</div>
+            <span class="text-[10px] text-slate-400 font-mono" id="barcodeTrackCode">@(Model?.TrackCode ?? "MYC-2026-XXXXXX")</span>
+        </div>
+        <div class="text-right">
+            <span class="block text-[9px] uppercase tracking-wider text-slate-500">SHA-256 Dijital Mühür</span>
+            <span class="font-mono text-[10px] text-cyan-400">#e9a4f2...89d1</span>
+            <span class="block text-[9px] text-emerald-400 font-semibold">T.C. Ulaştırma Bakanlığı Entegre</span>
+        </div>
+    </div>
+</div>

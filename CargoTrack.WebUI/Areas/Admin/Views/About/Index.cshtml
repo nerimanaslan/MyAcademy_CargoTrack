@@ -1,40 +1,67 @@
 @model List<ResultAboutDto>
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Hakkımızda Yönetimi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h3>Hakkımızda</h3>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Hakkımızda Metinleri</h2>
+        <p class="text-muted small mb-0">Ana sayfada ve kurumsal alanlarda gösterilen hakkımızda içerikleri</p>
+    </div>
+    <a href="/Admin/About/Create" class="btn btn-primary d-flex align-items-center gap-1">
+        <span class="material-symbols-outlined fs-6">add</span>
+        Yeni İçerik Ekle
+    </a>
+</div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">Henüz Hakkımızda Bilgisi Oluşturulmamış</div>
-    <br />
-    <a href="/Admin/About/Create" class="btn btn-dark">Yeni Hakkımızda Oluştur</a>
+    <div class="card card-stat bg-white p-5 text-center shadow-sm">
+        <div class="material-symbols-outlined text-muted mb-2" style="font-size: 48px;">info</div>
+        <h5 class="fw-bold">Henüz Hakkımızda Bilgisi Eklenmemiş</h5>
+        <p class="text-muted small mb-3">Sisteme ilk kurumsal tanıtım metnini eklemek için butona tıklayın.</p>
+        <div>
+            <a href="/Admin/About/Create" class="btn btn-primary">Yeni Hakkımızda Oluştur</a>
+        </div>
+    </div>
 }
 else
 {
-    <table class="table table-bordered table-hover">
-        <tr>
-        
-            <th>Görsel</th>
-            <th>Başlık</th>
-            <th>Açıklama</th>
-            <th>İşlemler</th>
-        </tr>
-
-        @foreach (var item in Model)
-        {
-            <tr>
-             
-                <td><img src="@item.ImageUrl" style="height:75px;width:75px;border-radius:50%" /></td>
-                <td>@item.Title</td>
-                <td>@item.Description</td>
-                <td>
-                    <a href="/Admin/About/Delete/@item.Id" onclick="return confirm('Silmek istediğinize emin misiniz?')" class="btn btn-danger">Sil</a>
-                    <a href="/Admin/About/Update/@item.Id" class="btn btn-info">Güncelle</a>
-                </td>
-            </tr>
-        }
-    </table>
+    <div class="card card-stat bg-white overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 90px;">Görsel</th>
+                        <th>Başlık</th>
+                        <th>Açıklama</th>
+                        <th class="text-end" style="width: 180px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrl" class="rounded-circle border" style="height: 52px; width: 52px; object-fit: cover;" alt="@item.Title" onerror="this.src='/images/default-about.png';" />
+                            </td>
+                            <td class="fw-bold text-white">@item.Title</td>
+                            <td class="text-muted small" style="max-width: 400px;">@item.Description</td>
+                            <td class="text-end">
+                                <a href="/Admin/About/Update/@item.Id" class="btn btn-sm btn-outline-info me-1 d-inline-flex align-items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 15px;">edit</span>
+                                    Güncelle
+                                </a>
+                                <a href="/Admin/About/Delete/@item.Id" onclick="return confirm('Bu içeriği silmek istediğinize emin misiniz?')" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1">
+                                    <span class="material-symbols-outlined" style="font-size: 15px;">delete</span>
+                                    Sil
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }

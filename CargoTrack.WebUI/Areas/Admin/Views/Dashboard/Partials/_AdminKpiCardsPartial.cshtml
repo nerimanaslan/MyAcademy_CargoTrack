@@ -1,0 +1,76 @@
+@model CargoTrack.DTO.DTOs.DashboardDtos.AdminDashboardDto
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-primary">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Toplam Kargo</div>
+                    <div class="fs-3 fw-bold text-dark mt-1">@Model.TotalCargos</div>
+                </div>
+                <span class="material-symbols-outlined text-primary fs-2">inventory_2</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Sistemdeki tüm kayıtlar</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-info">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Aktif Taşıma</div>
+                    <div class="fs-3 fw-bold text-info mt-1">@Model.ActiveCargos</div>
+                </div>
+                <span class="material-symbols-outlined text-info fs-2">local_shipping</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Şube & Transfer hattında</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-danger">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Geciken Kargo</div>
+                    <div class="fs-3 fw-bold text-danger mt-1">@Model.DelayedCargos</div>
+                </div>
+                <span class="material-symbols-outlined text-danger fs-2">schedule</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">SLA süresini aşanlar</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-success">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Teslimat Oranı</div>
+                    <div class="fs-3 fw-bold text-success mt-1">%@Model.DeliverySuccessRate</div>
+                </div>
+                <span class="material-symbols-outlined text-success fs-2">task_alt</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Başarıyla tamamlanan</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-warning">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Aktif Şube</div>
+                    <div class="fs-3 fw-bold text-warning mt-1">@Model.ActiveBranchesCount</div>
+                </div>
+                <span class="material-symbols-outlined text-warning fs-2">store</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Hizmet veren şubeler</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card card-stat p-3 bg-white border-start border-4 border-secondary">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="text-muted small fw-semibold">Aktif Personel</div>
+                    <div class="fs-3 fw-bold text-secondary mt-1">@Model.ActiveEmployeesCount</div>
+                </div>
+                <span class="material-symbols-outlined text-secondary fs-2">group</span>
+            </div>
+            <div class="mt-2 text-muted" style="font-size: 11px;">Kurye & Operasyon</div>
+        </div>
+    </div>
+</div>

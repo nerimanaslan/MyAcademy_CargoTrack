@@ -3,164 +3,16 @@
     ViewData["Title"] = "Şube Dashboard - " + Model.BranchName;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="h3 fw-bold mb-1">@Model.BranchName Operasyon Dashboard</h2>
-        <p class="text-muted small mb-0">Bugünkü şube kargo giriş/çıkışları, dağıtım durumu ve son hareketler</p>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="/Manager/Cargo/OutForDelivery" class="btn btn-warning d-flex align-items-center gap-1 text-dark fw-semibold">
-            <span class="material-symbols-outlined fs-6">verified_user</span>
-            Teslimat Kodu Doğrula
-        </a>
-        <a href="/Manager/Cargo/Index" class="btn btn-outline-secondary d-flex align-items-center gap-1">
-            <span class="material-symbols-outlined fs-6">list</span>
-            Şube Kargoları
-        </a>
-    </div>
-</div>
+<partial name="Partials/_ManagerDashboardHeaderPartial" model="Model" />
 
-<!-- 6 Stat Cards for Branch -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-2">
-        <div class="card card-stat p-3 bg-white border-start border-4 border-primary">
-            <div class="small text-muted fw-semibold">Bugün Gelen</div>
-            <div class="fs-3 fw-bold text-primary mt-1">@Model.TodayIncoming</div>
-            <div class="text-muted small">Varış şubesi burası</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-2">
-        <div class="card card-stat p-3 bg-white border-start border-4 border-info">
-            <div class="small text-muted fw-semibold">Bugün Çıkan</div>
-            <div class="fs-3 fw-bold text-info mt-1">@Model.TodayOutgoing</div>
-            <div class="text-muted small">Şubeden sevk edilen</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-2">
-        <div class="card card-stat p-3 bg-white border-start border-4 border-warning">
-            <div class="small text-muted fw-semibold">Dağıtımdaki</div>
-            <div class="fs-3 fw-bold text-warning mt-1">@Model.OutForDeliveryCount</div>
-            <div class="text-muted small">Kuryede / yolda</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-2">
-        <div class="card card-stat p-3 bg-white border-start border-4 border-success">
-            <div class="small text-muted fw-semibold">Bugün Teslim</div>
-            <div class="fs-3 fw-bold text-success mt-1">@Model.DeliveredCount</div>
-            <div class="text-muted small">Kod doğrulanıp teslim</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-2">
-        <div class="card card-stat p-3 bg-white border-start border-4 border-danger">
-            <div class="small text-muted fw-semibold">Geciken Kargo</div>
-            <div class="fs-3 fw-bold text-danger mt-1">@Model.DelayedCount</div>
-            <div class="text-muted small">SLA süresi aşılmış</div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-2">
-        <div class="card card-stat p-3 bg-white border-start border-4 border-dark">
-            <div class="small text-muted fw-semibold">Sorunlu / İade</div>
-            <div class="fs-3 fw-bold text-dark mt-1">@Model.ProblematicCount</div>
-            <div class="text-muted small">Hata / İade süreci</div>
-        </div>
-    </div>
-</div>
+<partial name="Partials/_ManagerDashboardKpiCardsPartial" model="Model" />
 
 <div class="row g-4">
-    <!-- Action Required Cargos -->
     <div class="col-lg-7">
-        <div class="card card-stat bg-white p-4 h-100">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">İşlem Bekleyen Kargolar</h5>
-                <a href="/Manager/Cargo/Index" class="btn btn-sm btn-link">Tümünü İncele &rarr;</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 small">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Takip No</th>
-                            <th>Alıcı</th>
-                            <th>Durum</th>
-                            <th>İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.ActionRequiredCargos != null && Model.ActionRequiredCargos.Any())
-                        {
-                            @foreach (var c in Model.ActionRequiredCargos)
-                            {
-                                <tr>
-                                    <td class="fw-bold font-monospace">@c.TrackCode</td>
-                                    <td>
-                                        <div>@c.ReceiverName</div>
-                                        <div class="text-muted" style="font-size: 11px;">@c.ReceiverPhone</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge @(c.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : c.CargoStatus == CargoStatus.DeliveryFailed ? "bg-danger" : "bg-primary")">
-                                            @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(c.CargoStatus)
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if (c.CargoStatus == CargoStatus.AtDestinationBranch)
-                                        {
-                                            <form asp-action="UpdateStatus" asp-controller="Cargo" method="post" class="d-inline">
-                                                <input type="hidden" name="CargoId" value="@c.Id" />
-                                                <input type="hidden" name="NewStatus" value="@CargoStatus.OutForDelivery" />
-                                                <input type="hidden" name="LocationName" value="@Model.BranchName" />
-                                                <button type="submit" class="btn btn-sm btn-outline-warning text-dark">Dağıtıma Çıkar</button>
-                                            </form>
-                                        }
-                                        else if (c.CargoStatus == CargoStatus.OutForDelivery)
-                                        {
-                                            <a href="/Manager/Cargo/OutForDelivery?search=@c.TrackCode" class="btn btn-sm btn-success">Teslim Et</a>
-                                        }
-                                        else
-                                        {
-                                            <a href="/Manager/Cargo/Detail/@c.Id" class="btn btn-sm btn-outline-secondary">Detay</a>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">Şu an acil işlem bekleyen kargo bulunmuyor.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <partial name="Partials/_ManagerDashboardActionCargosPartial" model="Model" />
     </div>
 
-    <!-- Recent Movements in Branch -->
     <div class="col-lg-5">
-        <div class="card card-stat bg-white p-4 h-100">
-            <h5 class="fw-bold mb-3 border-bottom pb-2">Şubedeki Son Hareketler</h5>
-            <div class="timeline">
-                @if (Model.RecentMovements != null && Model.RecentMovements.Any())
-                {
-                    @foreach (var m in Model.RecentMovements)
-                    {
-                        <div class="border-start border-3 border-info ps-3 pb-3 position-relative">
-                            <div class="small fw-semibold text-dark">@m.Description</div>
-                            <div class="text-muted" style="font-size: 11px;">
-                                <span class="material-symbols-outlined align-middle" style="font-size: 13px;">schedule</span>
-                                @m.Timestamp.ToString("dd.MM.yyyy HH:mm")
-                                @if (!string.IsNullOrEmpty(m.EmployeeName))
-                                {
-                                    <span>• İşlem: @m.EmployeeName</span>
-                                }
-                            </div>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <p class="text-muted small">Henüz hareket kaydı yok.</p>
-                }
-            </div>
-        </div>
+        <partial name="Partials/_ManagerDashboardRecentMovementsPartial" model="Model" />
     </div>
 </div>

@@ -1,0 +1,18 @@
+@model ManagerDashboardDto
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">@Model.BranchName Operasyon Dashboard</h2>
+        <p class="text-muted small mb-0">Bugünkü şube kargo giriş/çıkışları, dağıtım durumu ve canlı hareketler</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/Manager/Cargo/OutForDelivery" class="btn btn-warning d-flex align-items-center gap-1 text-dark fw-semibold">
+            <span class="material-symbols-outlined fs-6">verified_user</span>
+            Teslimat Kodu Doğrula
+        </a>
+        <a href="/Manager/Cargo/Index" class="btn btn-outline-secondary d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined fs-6">list</span>
+            Şube Kargoları
+        </a>
+    </div>
+</div>

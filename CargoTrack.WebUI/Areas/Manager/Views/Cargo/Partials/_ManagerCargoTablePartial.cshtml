@@ -1,0 +1,144 @@
+@using CargoTrack.DTO.DTOs.Cargos
+@using CargoTrack.Entity.Entities.Enums
+@model List<ResultCargoDto>
+
+@{
+    CargoStatus? currentStatus = ViewBag.CurrentStatus;
+    string search = ViewBag.CurrentSearch ?? "";
+    string branchName = ViewBag.BranchName as string ?? "Kadıköy Şubesi";
+    int pageNumber = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+}
+
+<section class="w-full lg:w-[58%] xl:w-[60%] flex flex-col border-r border-telemetry-border bg-[#090f1f] h-full">
+    <!-- Filter Bar -->
+    <div class="px-5 py-3 border-b border-telemetry-border flex flex-wrap items-center justify-between gap-3 bg-[#0d152a]">
+        <div class="inline-flex rounded-lg p-1 bg-[#060b17] border border-telemetry-border text-xs font-semibold">
+            <a href="/Manager/Cargo/Index" class="px-3 py-1.5 rounded-md @(currentStatus == null ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white")">Tümü (@Model.Count)</a>
+            <a href="/Manager/Cargo/Index?status=@((int)CargoStatus.OutForDelivery)" class="px-3 py-1.5 rounded-md @(currentStatus == CargoStatus.OutForDelivery ? "bg-amber-600 text-white shadow" : "text-slate-400 hover:text-white")">Dağıtımdakiler</a>
+            <a href="/Manager/Cargo/Index?status=@((int)CargoStatus.AtDestinationBranch)" class="px-3 py-1.5 rounded-md @(currentStatus == CargoStatus.AtDestinationBranch ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-white")">Varış Şubesinde</a>
+            <a href="/Manager/Cargo/Index?status=@((int)CargoStatus.Delivered)" class="px-3 py-1.5 rounded-md @(currentStatus == CargoStatus.Delivered ? "bg-emerald-600 text-white shadow" : "text-slate-400 hover:text-white")">Teslim Edilenler</a>
+        </div>
+        <form method="get" class="flex items-center space-x-2">
+            <input type="hidden" name="search" value="@search" />
+            <select name="status" onchange="this.form.submit()" class="text-xs bg-[#060b17] border border-telemetry-border text-slate-300 rounded-md py-1.5 pl-2.5 pr-8 focus:ring-1 focus:ring-blue-500">
+                <option value="">-- Tüm Durumlar --</option>
+                @foreach (CargoStatus st in Enum.GetValues(typeof(CargoStatus)))
+                {
+                    <option value="@((int)st)" selected="@(currentStatus == st ? "selected" : null)">@CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(st)</option>
+                }
+            </select>
+        </form>
+    </div>
+
+    <!-- Table Container -->
+    <div class="flex-1 overflow-y-auto">
+        <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 bg-[#0c1428] text-slate-400 uppercase tracking-wider text-[11px] font-semibold border-b border-telemetry-border z-10 shadow-sm">
+                <tr>
+                    <th class="py-3 px-4">Takip No</th>
+                    <th class="py-3 px-3">Alıcı Bilgisi</th>
+                    <th class="py-3 px-3">Güzergah (Çıkış → Varış)</th>
+                    <th class="py-3 px-2 text-center">Desi / Kg</th>
+                    <th class="py-3 px-3">Durum</th>
+                    <th class="py-3 px-2 text-center">SMS Kod</th>
+                    <th class="py-3 px-4 text-right">Operasyonel İşlem</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-telemetry-border/70 text-slate-300 font-normal">
+                @if (Model != null && Model.Any())
+                {
+                    int index = 0;
+                    foreach (var item in Model)
+                    {
+                        bool isFirst = (index == 0);
+                        index++;
+                        string statusBadgeClass = item.CargoStatus == CargoStatus.OutForDelivery ? "bg-amber-500/20 text-amber-300 border-amber-500/40" :
+                                                  item.CargoStatus == CargoStatus.Delivered ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" :
+                                                  item.CargoStatus == CargoStatus.ReturnProcess || item.CargoStatus == CargoStatus.DeliveryFailed ? "bg-rose-500/20 text-rose-300 border-rose-500/40" : "bg-blue-500/20 text-blue-300 border-blue-500/40";
+
+                        <tr class="cargo-row hover:bg-[#101b33] transition cursor-pointer @(isFirst ? "bg-blue-950/30 border-l-4 border-l-cyan-400" : "")"
+                            data-id="@item.Id"
+                            data-code="@item.TrackCode"
+                            data-receiver="@item.ReceiverName"
+                            data-phone="@item.ReceiverPhone"
+                            data-origin="@item.OriginBranchName"
+                            data-destination="@item.DestinationBranchName"
+                            data-weight="@item.Weight"
+                            data-desi="@item.Desi"
+                            data-status="@((int)item.CargoStatus)"
+                            data-status-text="@CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(item.CargoStatus)"
+                            data-price="@item.Price.ToString("N2")"
+                            data-pincode="@(item.DeliveryPinCode ?? "")"
+                            data-shipmentdate="@item.ShipmentDate.ToString("dd.MM.yyyy HH:mm")"
+                            data-estimated="@item.EstimatedDeliveryDate.ToString("dd MMMM yyyy")">
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-2 h-2 rounded-full @(item.CargoStatus == CargoStatus.Delivered ? "bg-emerald-400" : item.CargoStatus == CargoStatus.OutForDelivery ? "bg-amber-400 animate-pulse" : "bg-cyan-400")"></span>
+                                    <span class="font-mono font-bold text-cyan-300 text-[13px] tracking-wide">@item.TrackCode</span>
+                                </div>
+                                <span class="text-[10px] text-slate-400 block ml-4">Tahmini: @item.EstimatedDeliveryDate.ToString("dd MMM")</span>
+                            </td>
+                            <td class="py-3.5 px-3">
+                                <div class="font-semibold text-white">@item.ReceiverName</div>
+                                <div class="text-[11px] font-mono text-slate-400">@item.ReceiverPhone</div>
+                            </td>
+                            <td class="py-3.5 px-3">
+                                <div class="flex items-center space-x-1 font-medium">
+                                    <span class="text-slate-300">@item.OriginBranchName</span>
+                                    <span class="text-cyan-400">→</span>
+                                    <span class="text-amber-300 font-bold">@item.DestinationBranchName</span>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-2 text-center">
+                                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono text-[11px] border border-slate-700">@item.Weight kg / @item.Desi d</span>
+                            </td>
+                            <td class="py-3.5 px-3">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border @statusBadgeClass">
+                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(item.CargoStatus)
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-2 text-center">
+                                @if (!string.IsNullOrEmpty(item.DeliveryPinCode))
+                                {
+                                    <span class="font-mono font-bold px-2 py-1 bg-blue-950 border border-blue-500/40 text-cyan-300 rounded text-xs tracking-wider">@item.DeliveryPinCode</span>
+                                }
+                                else
+                                {
+                                    <span class="font-mono text-slate-500 text-xs">-</span>
+                                }
+                            </td>
+                            <td class="py-3.5 px-4 text-right">
+                                <div class="flex items-center justify-end space-x-1.5">
+                                    <a href="/Manager/Cargo/Detail/@item.Id" class="px-2.5 py-1.5 bg-[#16294e] hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 rounded-md font-semibold text-xs transition">
+                                        İşlem
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="py-12 text-center text-slate-500 text-sm">
+                            Bu filtrelere uygun kargo kaydı bulunamadı.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer Bar -->
+    <div class="px-4 py-2.5 bg-[#070c18] border-t border-telemetry-border flex items-center justify-between text-xs text-slate-400">
+        <div class="flex items-center space-x-4">
+            <span>Toplam: <strong class="text-white">@(ViewBag.TotalCount ?? Model.Count) Kargo</strong></span>
+            <span>•</span>
+            <span class="text-cyan-400">@branchName: <strong>Aktif Operasyon</strong></span>
+        </div>
+        <div class="flex items-center space-x-2 font-mono">
+            <span class="px-2 py-0.5 rounded bg-[#101b33] border border-telemetry-border text-slate-300">Sayfa @pageNumber / @totalPages</span>
+        </div>
+    </div>
+</section>

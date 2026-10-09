@@ -1,27 +1,59 @@
 @using CargoTrack.DTO.DTOs.UserDtos
 @model List<RoleAssignDto>
 @{
-    ViewData["Title"] = "AssignRole";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Rol Atama";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h3>Rol Atama</h3>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Yetki ve Rol Atama</h2>
+        <p class="text-muted small mb-0"><strong class="text-white">@ViewBag.fullName</strong> kullanıcısının sistem yetkilerini belirleyin</p>
+    </div>
+    <a href="/Admin/RoleAssign/Index" class="btn btn-outline-secondary d-flex align-items-center gap-1">
+        <span class="material-symbols-outlined fs-6">arrow_back</span>
+        Kullanıcı Listesine Dön
+    </a>
+</div>
 
-<strong>@ViewBag.fullName kullanıcısına rol atama işlemlerini aşağıdan gerçekleştirebilirsiniz.</strong>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 shadow-sm">
+            <h5 class="fw-bold mb-3 border-bottom pb-2 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-info">shield_person</span>
+                Kullanıcı Rolleri
+            </h5>
 
-<form method="post">
+            <form method="post">
+                <div class="d-flex flex-column gap-3 mb-4">
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <div class="p-3 bg-light rounded border d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="checkbox" asp-for="@Model[i].RoleExist" class="form-check-input mt-0" style="width: 1.25rem; height: 1.25rem;" id="roleCheck_@i" />
+                                <label class="form-check-label fw-semibold cursor-pointer mb-0" for="roleCheck_@i">
+                                    @Model[i].RoleName
+                                </label>
+                            </div>
+                            <span class="badge @(Model[i].RoleName == "Admin" ? "bg-danger" : Model[i].RoleName == "Manager" ? "bg-warning text-dark" : "bg-primary")">
+                                Sistem Rolü
+                            </span>
 
-    @for(int i = 0; i < Model.Count; i++)
-    {
-        <div>
-            <input type="checkbox" asp-for="@Model[i].RoleExist" />
-            <label>@Model[i].RoleName</label>
+                            <input type="hidden" asp-for="@Model[i].RoleName" />
+                            <input type="hidden" asp-for="@Model[i].RoleId" />
+                            <input type="hidden" asp-for="@Model[i].UserId" />
+                        </div>
+                    }
+                </div>
 
-            <input type="hidden" asp-for="@Model[i].RoleName" />
-            <input type="hidden" asp-for="@Model[i].RoleId" />
-            <input type="hidden" asp-for="@Model[i].UserId" />
+                <div class="d-flex justify-content-end gap-2 pt-2">
+                    <a href="/Admin/RoleAssign/Index" class="btn btn-outline-secondary">İptal</a>
+                    <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined fs-6">check_circle</span>
+                        Rolleri Kaydet
+                    </button>
+                </div>
+            </form>
         </div>
-    }
-
-    <button class="btn btn-dark">Rol Ata</button>
-</form>
+    </div>
+</div>

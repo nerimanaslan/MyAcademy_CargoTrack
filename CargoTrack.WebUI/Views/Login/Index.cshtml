@@ -3,38 +3,131 @@
 
 @{
     ViewData["Title"] = "Giriş Yap";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/UILayout/Index.cshtml";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4 class="mb-0">Sisteme Giriş Yap</h4>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Index" asp-controller="Login" method="post">
-                        
-                        <!-- Hataları göstereceğimiz alan -->
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold"></div>
-                        
-                        <div class="form-group mb-3">
-                            <label asp-for="UserName" class="form-label">Kullanıcı Adı</label>
-                            <input asp-for="UserName" class="form-control" placeholder="Kullanıcı adınızı giriniz..." required />
-                        </div>
-                        
-                        <div class="form-group mb-4">
-                            <label asp-for="Password" class="form-label">Şifre</label>
-                            <input asp-for="Password" type="password" class="form-control" placeholder="Şifrenizi giriniz..." required />
-                        </div>
-                        
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Giriş Yap</button>
-                        </div>
-                    </form>
-                </div>
+<div class="relative min-h-[calc(100vh-180px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <!-- Arka Plan Telemetri Işıklandırma Haresi -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div class="w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div class="w-[300px] h-[300px] bg-blue-600/10 rounded-full blur-2xl -translate-y-20"></div>
+    </div>
+
+    <!-- Giriş Kartı -->
+    <div class="relative w-full max-w-md bg-[#0d1527] border border-[#1e2f58] rounded-2xl p-7 sm:p-9 shadow-2xl backdrop-blur-xl">
+        
+        <!-- Üst Başlık & Durum Rozeti -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#060b17] border border-[#1e2f58] text-cyan-400 text-xs font-mono mb-4 tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span>CARGOTRACK // AUTH GATEWAY</span>
             </div>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Sisteme Giriş Yap</h2>
+            <p class="text-slate-400 text-xs sm:text-sm mt-1.5">Kargo yönetim ve takip terminaline erişim sağlayın.</p>
         </div>
+
+        <form asp-action="Index" asp-controller="Login" method="post" class="space-y-4">
+            
+            <!-- Hata Özeti -->
+            <div asp-validation-summary="ModelOnly" class="empty:hidden p-3 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs"></div>
+
+            <!-- Kullanıcı Adı -->
+            <div>
+                <label asp-for="UserName" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                    Kullanıcı Adı
+                </label>
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3.5 text-slate-500 text-xl pointer-events-none">
+                        person
+                    </span>
+                    <input asp-for="UserName" 
+                           id="userNameInput"
+                           type="text" 
+                           required 
+                           placeholder="Kullanıcı adınızı girin..." 
+                           class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-11 pr-4 py-3 text-sm placeholder-slate-500 transition-all outline-none font-medium" />
+                </div>
+                <span asp-validation-for="UserName" class="text-xs text-red-400 mt-1 block"></span>
+            </div>
+
+            <!-- Şifre -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label asp-for="Password" class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                        Şifre
+                    </label>
+                </div>
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3.5 text-slate-500 text-xl pointer-events-none">
+                        lock
+                    </span>
+                    <input asp-for="Password" 
+                           id="passwordInput"
+                           type="password" 
+                           required 
+                           placeholder="••••••••" 
+                           class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-11 pr-11 py-3 text-sm placeholder-slate-500 transition-all outline-none font-medium font-mono" />
+                    <button type="button" 
+                            onclick="togglePassword()" 
+                            class="absolute right-3 text-slate-500 hover:text-slate-300 transition-colors p-1 flex items-center"
+                            title="Şifreyi Göster/Gizle">
+                        <span id="pwdEyeIcon" class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-xs text-red-400 mt-1 block"></span>
+            </div>
+
+            <!-- Giriş Butonu -->
+            <div class="pt-2">
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-blue-600 via-cyan-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]">
+                    <span>Sisteme Giriş Yap</span>
+                    <span class="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                </button>
+            </div>
+
+            <!-- Kayıt Ol Linki -->
+            <div class="text-center pt-2">
+                <span class="text-xs text-slate-400">Hesabınız yok mu? </span>
+                <a href="/Register/Signup" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">
+                    Hemen Kayıt Olun ➔
+                </a>
+            </div>
+        </form>
+
+        <!-- Demo Hesaplar Partial View -->
+        @await Html.PartialAsync("_LoginDemoAccountsPartial")
+
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            const pwdInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('pwdEyeIcon');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.textContent = 'visibility_off';
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.textContent = 'visibility';
+            }
+        }
+
+        function fillDemo(username, password) {
+            const userInput = document.getElementById('userNameInput');
+            const pwdInput = document.getElementById('passwordInput');
+            userInput.value = username;
+            pwdInput.value = password;
+
+            // Görsel geri bildirim (hafif odak ve vurgu)
+            userInput.classList.add('border-cyan-400');
+            pwdInput.classList.add('border-cyan-400');
+            setTimeout(() => {
+                userInput.classList.remove('border-cyan-400');
+                pwdInput.classList.remove('border-cyan-400');
+            }, 800);
+        }
+    </script>
+}

@@ -1,42 +1,86 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CargoTrack.WebUI</title>
+    <title>@ViewData["Title"] - CargoTrack</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/CargoTrack.WebUI.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-surface: #0b1224;
+            --bg-card: #0d1527;
+            --border-color: #1e2f58;
+            --text-main: #e2e8f0;
+            --text-muted: #62749d;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar-custom {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .card {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+        }
+        .footer-custom {
+            background-color: #050914;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Default" asp-action="Index">Kargo Takip Ekranına Geri Dön</a>
+        <nav class="navbar navbar-expand-sm navbar-dark navbar-custom shadow-sm mb-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" asp-area="" asp-controller="Default" asp-action="Index">
+                    <span class="material-symbols-outlined text-info fs-3">package_2</span>
+                    <span class="text-white">CargoTrack</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                    <ul class="navbar-nav gap-2">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Default" asp-action="Index">Kargo Takip</a>
+                            <a class="nav-link text-light fw-medium" asp-area="" asp-controller="Default" asp-action="Index">Kargo Sorgula</a>
                         </li>
-                        
+                        <li class="nav-item">
+                            <a class="nav-link text-light fw-medium" asp-area="" asp-controller="Login" asp-action="Index">Giriş Yap</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-info btn-sm px-3 d-flex align-items-center" asp-area="" asp-controller="Register" asp-action="Signup">Kayıt Ol</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container flex-grow-1">
+        <main role="main" class="pb-4">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-          &copy; @DateTime.Now.Year - CargoTrack    </div>
+    <footer class="footer-custom py-3 mt-auto">
+        <div class="container text-center small">
+            &copy; @DateTime.Now.Year - CargoTrack Lojistik Sistemleri • Tüm Hakları Saklıdır.
+        </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

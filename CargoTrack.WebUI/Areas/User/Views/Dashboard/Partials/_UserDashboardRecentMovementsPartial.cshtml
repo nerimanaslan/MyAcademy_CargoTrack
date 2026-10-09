@@ -1,0 +1,27 @@
+@model UserDashboardDto
+
+<div class="card card-stat p-4 mb-4">
+    <h5 class="fw-bold mb-3 border-bottom pb-2 text-white border-secondary">Son Kargo Hareketleri</h5>
+    @if (Model.RecentMovements != null && Model.RecentMovements.Any())
+    {
+        <div class="timeline">
+            @foreach (var movement in Model.RecentMovements)
+            {
+                <div class="border-start border-3 border-info ps-3 pb-3">
+                    <div class="d-flex justify-content-between gap-3">
+                        <div>
+                            <span class="fw-semibold font-monospace text-info">@movement.TrackCode</span>
+                            <span class="text-light">- @movement.Description</span>
+                        </div>
+                        <span class="text-muted small text-nowrap">@movement.Timestamp.ToString("dd.MM.yyyy HH:mm")</span>
+                    </div>
+                    <div class="small text-muted">@movement.LocationName</div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted small mb-0">Henüz görüntülenecek bir kargo hareketi bulunmuyor.</p>
+    }
+</div>

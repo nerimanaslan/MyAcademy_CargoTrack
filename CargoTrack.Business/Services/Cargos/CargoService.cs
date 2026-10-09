@@ -234,8 +234,8 @@ namespace CargoTrack.Business.Services.Cargos
 
             await CheckManagerBranchAsync(cargo, currentUserId);
 
-            if (cargo.CargoStatus != CargoStatus.OutForDelivery)
-                throw new ValidationException("Kargo şu an dağıtımda değil.");
+            if (cargo.CargoStatus != CargoStatus.OutForDelivery && cargo.CargoStatus != CargoStatus.AtDestinationBranch)
+                throw new ValidationException("Kargo henüz teslimat aşamasında değil (Varış Şubesinde veya Dağıtımda olmalıdır).");
             if (string.IsNullOrEmpty(cargo.DeliveryPinCode) || cargo.DeliveryPinCode.Trim() != dto.DeliveryCode.Trim())
                 throw new ValidationException("Teslimat kodu geçersiz.");
             var oldStatus = cargo.CargoStatus;

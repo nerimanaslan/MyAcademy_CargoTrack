@@ -1,6 +1,6 @@
 @model CargoTrack.DTO.DTOs.UserDtos.RegisterUserDto
 @{
-    Layout = null; // Kayıt ekranı tam sayfa olacağı için genel Layout'u devre dışı bıraktık
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -8,88 +8,115 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kayıt Ol - CargoTrack</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>Kayıt Ol - CargoTrack Telemetri Portalı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <style>
-        body {
-            background-color: #f8f9ff;
-        }
-
-        .register-card {
-            max-width: 500px;
-            border-radius: 1rem;
-            border: 1px solid #dce3eb;
-        }
-
-        .form-control:focus {
-            border-color: #001e3c;
-            box-shadow: 0 0 0 0.25rem rgba(0, 30, 60, 0.1);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #070b14; color: #e2e8f0; }
+        .material-symbols-outlined { font-size: 20px; }
     </style>
 </head>
-<body class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-[#070b14] relative overflow-x-hidden">
+    
+    <!-- Arka Plan Telemetri Parıltıları -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div class="w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-2xl -translate-y-24"></div>
+    </div>
 
-    <div class="container d-flex justify-content-center">
-        <div class="card register-card shadow-sm w-100 p-4 p-md-5 bg-white">
-            <div class="text-center mb-4">
-                <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3" style="width: 60px; height: 60px;">
-                    <span class="material-symbols-outlined fs-2">person_add</span>
+    <div class="relative w-full max-w-lg bg-[#0d1527] border border-[#1e2f58] rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        
+        <!-- Üst Başlık & Rozet -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#060b17] border border-[#1e2f58] text-cyan-400 text-xs font-mono mb-3 tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span>CARGOTRACK // REGISTRATION</span>
+            </div>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Yeni Hesap Oluştur</h2>
+            <p class="text-slate-400 text-xs sm:text-sm mt-1">Kargolarınızı anlık takip etmek ve yönetmek için kaydolun.</p>
+        </div>
+
+        <form asp-action="Signup" asp-controller="Register" method="post" class="space-y-4">
+            
+            <div asp-validation-summary="ModelOnly" class="empty:hidden p-3 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs"></div>
+
+            <!-- Ad ve Soyad (Yan Yana) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Adınız</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3 text-slate-500">person</span>
+                        <input asp-for="FirstName" class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-10 pr-3 py-2.5 text-sm placeholder-slate-500 outline-none transition-all" placeholder="Örn: Ahmet" required />
+                    </div>
+                    <span asp-validation-for="FirstName" class="text-xs text-red-400 mt-1 block"></span>
                 </div>
-                <h2 class="fw-bold text-dark mb-1">Hesap Oluştur</h2>
-                <p class="text-muted small">Kargolarınızı yönetmek için hemen kayıt olun.</p>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Soyadınız</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3 text-slate-500">badge</span>
+                        <input asp-for="LastName" class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-10 pr-3 py-2.5 text-sm placeholder-slate-500 outline-none transition-all" placeholder="Örn: Yılmaz" required />
+                    </div>
+                    <span asp-validation-for="LastName" class="text-xs text-red-400 mt-1 block"></span>
+                </div>
             </div>
 
-            <form asp-action="Signup" asp-controller="Register" method="post">
-                <!-- Hata Mesajları -->
-                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+            <!-- Kullanıcı Adı -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Kullanıcı Adı</label>
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-slate-500">alternate_email</span>
+                    <input asp-for="UserName" class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-10 pr-3 py-2.5 text-sm placeholder-slate-500 outline-none transition-all" placeholder="ahmetyilmaz" required />
+                </div>
+                <span asp-validation-for="UserName" class="text-xs text-red-400 mt-1 block"></span>
+            </div>
 
-                <div class="row g-3 mb-3">
-                    <div class="col-sm-6">
-                        <label class="form-label text-muted small fw-semibold mb-1">Adınız</label>
-                        <input asp-for="FirstName" class="form-control" placeholder="Örn: Ahmet" required />
-                        <span asp-validation-for="FirstName" class="text-danger small"></span>
+            <!-- E-Posta -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">E-Posta Adresi</label>
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined absolute left-3 text-slate-500">mail</span>
+                    <input asp-for="Email" type="email" class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-10 pr-3 py-2.5 text-sm placeholder-slate-500 outline-none transition-all" placeholder="ahmet@example.com" required />
+                </div>
+                <span asp-validation-for="Email" class="text-xs text-red-400 mt-1 block"></span>
+            </div>
+
+            <!-- Şifre & Şifre Tekrar (Yan Yana) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Şifre</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3 text-slate-500">lock</span>
+                        <input asp-for="Password" type="password" class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-10 pr-3 py-2.5 text-sm placeholder-slate-500 outline-none transition-all font-mono" placeholder="••••••••" required />
                     </div>
-                    <div class="col-sm-6">
-                        <label class="form-label text-muted small fw-semibold mb-1">Soyadınız</label>
-                        <input asp-for="LastName" class="form-control" placeholder="Örn: Yılmaz" required />
-                        <span asp-validation-for="LastName" class="text-danger small"></span>
+                    <span asp-validation-for="Password" class="text-xs text-red-400 mt-1 block"></span>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Şifre Tekrar</label>
+                    <div class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3 text-slate-500">lock_reset</span>
+                        <input asp-for="ConfirmPassword" type="password" class="w-full bg-[#060b17] border border-[#1e2f58] focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 text-white rounded-xl pl-10 pr-3 py-2.5 text-sm placeholder-slate-500 outline-none transition-all font-mono" placeholder="••••••••" required />
                     </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-xs text-red-400 mt-1 block"></span>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-semibold mb-1">Kullanıcı Adı</label>
-                    <input asp-for="UserName" class="form-control" placeholder="Örn: ahmetyilmaz" required />
-                    <span asp-validation-for="UserName" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-semibold mb-1">E-Posta Adresi</label>
-                    <input asp-for="Email" type="email" class="form-control" placeholder="Örn: ahmet@example.com" required />
-                    <span asp-validation-for="Email" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-semibold mb-1">Şifre</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="En az 6 karakter" required />
-                    <span asp-validation-for="Password" class="text-danger small"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label text-muted small fw-semibold mb-1">Şifre Tekrar</label>
-                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Şifrenizi tekrar girin" required />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mb-3" style="background-color: #001e3c; border-color: #001e3c;">
-                    Kayıt Ol
+            <!-- Kayıt Butonu -->
+            <div class="pt-2">
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 via-cyan-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]">
+                    <span>Hesap Oluştur ve Başla</span>
+                    <span class="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
                 </button>
+            </div>
 
-                <div class="text-center text-muted small">
-                    Zaten bir hesabınız var mı? <a href="/Login/Index" class="text-decoration-none fw-semibold" style="color: #001e3c;">Giriş Yap</a>
-                </div>
-            </form>
-        </div>
+            <!-- Giriş Yap Linki -->
+            <div class="text-center pt-2">
+                <span class="text-xs text-slate-400">Zaten bir hesabınız var mı? </span>
+                <a href="/Login/Index" class="text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">
+                    Giriş Yapın ➔
+                </a>
+            </div>
+        </form>
     </div>
 
 </body>

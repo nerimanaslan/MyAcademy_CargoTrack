@@ -1,35 +1,66 @@
 @model List<ResultBranchDto>
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Şubelerimiz";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
 }
 
-<h3>Şubelerimiz</h3>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="h3 fw-bold mb-0">Şube Yönetimi</h2>
+            <span class="badge bg-primary-subtle text-info border border-info-subtle font-monospace px-2 py-1">@Model.Count ŞUBE AKTİF</span>
+        </div>
+        <p class="text-muted small mt-1 mb-0">Sistemdeki kargo kabul ve dağıtım merkez şubeleri</p>
+    </div>
+    <a href="/Admin/Branch/Create" class="btn btn-primary d-flex align-items-center gap-1">
+        <span class="material-symbols-outlined fs-6">add_location_alt</span>
+        Yeni Şube Ekle
+    </a>
+</div>
 
-<table class="table table-bordered table-hover">
-    @{
-        int count = 0;
-    }
-    <tr>
-        <th>#</th>
-        <th>Şube İsmi</th>
-        <th>Şehir</th>
-        <th>İşlemler</th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        count++;
-        <tr>
-            <th>@count</th>
-            <td>@item.Name</td>
-            <td>@item.City.Name</td>
-            <td>
-                <a href="/Admin/Branch/Delete/@item.Id" onclick="return confirm('Silmek istediğinize emin misiniz?')" class="btn btn-danger">Sil</a>
-                <a href="/Admin/Branch/Update/@item.Id" class="btn btn-info">Güncelle</a>
-            </td>
-        </tr>
-    }
-</table>
-
-<a href="/Admin/Branch/Create" class="btn btn-dark">Yeni Şube Oluştur</a>
+<div class="card card-stat bg-white overflow-hidden shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th>Şube İsmi</th>
+                    <th>Bağlı Şehir</th>
+                    <th class="text-end" style="width: 180px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    count++;
+                    <tr>
+                        <td class="font-monospace text-muted">@count</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined text-info" style="font-size: 20px;">store</span>
+                                <span class="fw-semibold">@item.Name</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-light border px-2 py-1">
+                                <span class="material-symbols-outlined align-middle me-1" style="font-size: 14px;">location_city</span>
+                                @item.City?.Name
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/Admin/Branch/Update/@item.Id" class="btn btn-sm btn-outline-info me-1 d-inline-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size: 15px;">edit</span>
+                                Güncelle
+                            </a>
+                            <a href="/Admin/Branch/Delete/@item.Id" onclick="return confirm('Bu şubeyi silmek istediğinize emin misiniz?')" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined" style="font-size: 15px;">delete</span>
+                                Sil
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

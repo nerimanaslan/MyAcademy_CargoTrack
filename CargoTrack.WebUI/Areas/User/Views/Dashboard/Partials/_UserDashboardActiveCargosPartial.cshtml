@@ -1,0 +1,52 @@
+@model UserDashboardDto
+
+<div class="card card-stat p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-white">Aktif / Taşımadaki Gönderilerim</h5>
+        <span class="badge bg-info text-dark">Canlı Takip</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Takip No</th>
+                    <th>Alıcı</th>
+                    <th>Varış Şubesi</th>
+                    <th>Durum</th>
+                    <th>Tahmini Teslimat</th>
+                    <th class="text-end">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ActiveCargos != null && Model.ActiveCargos.Any())
+                {
+                    @foreach (var c in Model.ActiveCargos)
+                    {
+                        <tr>
+                            <td class="fw-bold font-monospace text-info">@c.TrackCode</td>
+                            <td class="text-white">@c.ReceiverName</td>
+                            <td class="text-light">@c.DestinationBranchName</td>
+                            <td>
+                                <span class="badge @(c.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : "bg-primary")">
+                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(c.CargoStatus)
+                                </span>
+                            </td>
+                            <td class="text-light">@c.EstimatedDeliveryDate.ToString("dd MMMM yyyy")</td>
+                            <td class="text-end">
+                                <a href="/Default/CargoDetails?trackCode=@c.TrackCode" class="btn btn-sm btn-outline-info" target="_blank">
+                                    Detaylı Takip &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Şu an aktif veya taşımada olan bir kargonuz bulunmamaktadır.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

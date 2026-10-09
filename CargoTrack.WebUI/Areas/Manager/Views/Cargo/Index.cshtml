@@ -1,123 +1,183 @@
+@using CargoTrack.DTO.DTOs.Cargos
 @model List<ResultCargoDto>
 @{
-    ViewData["Title"] = "Şube Kargoları";
-    int pageNumber = ViewBag.CurrentPage ?? 1;
-    int totalPages = ViewBag.TotalPages ?? 1;
-    string search = ViewBag.CurrentSearch ?? "";
-    CargoStatus? currentStatus = ViewBag.CurrentStatus;
+    Layout = null;
+    ViewData["Title"] = "CargoTrack • Şube Operasyon & Canlı Takip Konsolu";
+    var dashboard = ViewBag.Dashboard as CargoTrack.DTO.DTOs.DashboardDtos.ManagerDashboardDto;
+    var firstCargo = Model.FirstOrDefault();
 }
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="h3 fw-bold mb-1">Şube Kargoları</h2>
-        <p class="text-muted small mb-0">Bağlı olduğunuz şubeye ait gelen, giden ve dağıtımdaki tüm gönderiler</p>
-    </div>
-    <a href="/Manager/Cargo/OutForDelivery" class="btn btn-warning text-dark fw-semibold d-flex align-items-center gap-1">
-        <span class="material-symbols-outlined fs-6">verified_user</span>
-        Dağıtım Listesi & Kod Doğrulama
-    </a>
-</div>
-
-<!-- Filter & Search Bar -->
-<div class="card card-stat bg-white p-3 mb-4">
-    <form method="get" class="row g-2 align-items-center">
-        <div class="col-md-5">
-            <div class="input-group">
-                <span class="input-group-text bg-light"><span class="material-symbols-outlined fs-6">search</span></span>
-                <input type="text" name="search" class="form-control" placeholder="Takip No veya Alıcı ara..." value="@search" />
-            </div>
-        </div>
-        <div class="col-md-4">
-            <select name="status" class="form-select">
-                <option value="">-- Tüm Durumlar --</option>
-                @foreach (CargoStatus st in Enum.GetValues(typeof(CargoStatus)))
-                {
-                    <option value="@st" selected="@(currentStatus == st ? "selected" : null)">@CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(st)</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-dark w-100">Filtrele</button>
-            <a href="/Manager/Cargo/Index" class="btn btn-outline-secondary">Temizle</a>
-        </div>
-    </form>
-</div>
-
-<!-- Cargo Table -->
-<div class="card card-stat bg-white overflow-hidden">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Takip No</th>
-                    <th>Alıcı</th>
-                    <th>Çıkış Şubesi</th>
-                    <th>Varış Şubesi</th>
-                    <th>Ağırlık/Desi</th>
-                    <th>Durum</th>
-                    <th>Tahmini Teslimat</th>
-                    <th class="text-end">İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                <a href="/Manager/Cargo/Detail/@item.Id" class="fw-bold font-monospace text-primary text-decoration-none">
-                                    @item.TrackCode
-                                </a>
-                            </td>
-                            <td>
-                                <div>@item.ReceiverName</div>
-                                <div class="text-muted small" style="font-size: 11px;">@item.ReceiverPhone</div>
-                            </td>
-                            <td>@item.OriginBranchName</td>
-                            <td>@item.DestinationBranchName</td>
-                            <td><span class="badge bg-light text-dark border">@item.Weight kg / @item.Desi desi</span></td>
-                            <td>
-                                <span class="badge @(item.CargoStatus == CargoStatus.Delivered ? "bg-success" : item.CargoStatus == CargoStatus.OutForDelivery ? "bg-warning text-dark" : item.CargoStatus == CargoStatus.DeliveryFailed ? "bg-danger" : "bg-primary")">
-                                    @CargoTrack.Business.Services.Cargos.CargoService.GetStatusDisplayName(item.CargoStatus)
-                                </span>
-                                @if (item.IsDelayed)
-                                {
-                                    <span class="badge bg-danger mt-1 d-block">Gecikmeli</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="small">@item.EstimatedDeliveryDate.ToString("dd.MM.yyyy")</div>
-                            </td>
-                            <td class="text-end">
-                                <a href="/Manager/Cargo/Detail/@item.Id" class="btn btn-sm btn-outline-primary">Detay / İşlem</a>
-                            </td>
-                        </tr>
+<!DOCTYPE html>
+<html class="h-full bg-[#070b14]" lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>@ViewData["Title"]</title>
+    <!-- Tailwind CSS with Forms & Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        telemetry: {
+                            base: '#070b14',
+                            surface: '#0d1527',
+                            card: '#111b33',
+                            cardHover: '#162343',
+                            border: '#1e2f58',
+                            muted: '#62749d',
+                            accent: '#3b82f6',
+                            amber: '#f59e0b',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            cyan: '#06b6d4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    boxShadow: {
+                        'glow-cyan': '0 0 20px -3px rgba(6, 182, 212, 0.3)',
+                        'glow-emerald': '0 0 25px -4px rgba(16, 185, 129, 0.4)',
+                        'glow-amber': '0 0 20px -3px rgba(245, 158, 11, 0.35)',
+                        'glow-blue': '0 0 25px -4px rgba(59, 130, 246, 0.35)'
                     }
                 }
-                else
-                {
-                    <tr>
-                        <td colspan="8" class="text-center py-4 text-muted">Şubenize ait kargo bulunamadı.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090e1c; }
+        ::-webkit-scrollbar-thumb { background: #1e2f58; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334e8d; }
+        @@keyframes pulseRing {
+            0% { transform: scale(0.9); opacity: 0.9; }
+            80% { transform: scale(2.4); opacity: 0; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+        .pulse-ring { animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+        .grid-pattern {
+            background-size: 24px 24px;
+            background-image: 
+                linear-gradient(to right, rgba(30, 47, 88, 0.25) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(30, 47, 88, 0.25) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="h-full text-slate-200 antialiased font-sans flex flex-col bg-[#070b14] overflow-hidden select-none">
 
-    <!-- Pagination -->
-    @if (totalPages > 1)
+    <!-- Toast Bildirimleri -->
+    @if (TempData["success"] != null)
     {
-        <div class="p-3 border-top d-flex justify-content-between align-items-center">
-            <span class="small text-muted">Sayfa @pageNumber / @totalPages</span>
-            <ul class="pagination pagination-sm mb-0">
-                @for (int p = 1; p <= totalPages; p++)
-                {
-                    <li class="page-item @(p == pageNumber ? "active" : "")">
-                        <a class="page-link" href="/Manager/Cargo/Index?page=@p&search=@search&status=@currentStatus">@p</a>
-                    </li>
-                }
-            </ul>
+        <div id="toastSuccess" class="fixed top-4 right-4 z-50 flex items-center p-4 mb-4 text-emerald-200 bg-[#0d1f35] border border-emerald-500 rounded-xl shadow-glow-emerald">
+            <svg class="w-5 h-5 mr-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span class="text-xs font-semibold">@TempData["success"]</span>
+            <button onclick="this.parentElement.remove()" class="ml-4 text-emerald-400 hover:text-white">&times;</button>
         </div>
     }
-</div>
+    @if (TempData["error"] != null)
+    {
+        <div id="toastError" class="fixed top-4 right-4 z-50 flex items-center p-4 mb-4 text-rose-200 bg-[#2d111b] border border-rose-500 rounded-xl shadow-lg">
+            <svg class="w-5 h-5 mr-2 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <span class="text-xs font-semibold">@TempData["error"]</span>
+            <button onclick="this.parentElement.remove()" class="ml-4 text-rose-400 hover:text-white">&times;</button>
+        </div>
+    }
+
+    <!-- 1. ÜST NAVİGASYON & ARAMA ÇUBUĞU (Partial View) -->
+    <partial name="Partials/_ManagerTopHeaderPartial" />
+
+    <!-- 2. ŞUBE CANLI KPI KARTLARI (Partial View) -->
+    <partial name="Partials/_ManagerKpiCardsPartial" model="dashboard" />
+
+    <!-- 3. ANA OPERASYON İŞ İSTASYONU BÖLÜMÜ -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+        <!-- Sol Panel: Kargo Tablosu ve Filtreler (Partial View) -->
+        <partial name="Partials/_ManagerCargoTablePartial" model="Model" />
+
+        <!-- Sağ Panel: Odaklanılan Kargo, Harita ve PIN Terminali -->
+        <section class="w-full lg:w-[42%] xl:w-[40%] flex flex-col bg-[#0b1224] h-full overflow-y-auto">
+            <!-- 3.A. Canlı GPS Harita ve Stepper (Partial View) -->
+            <partial name="Partials/_ManagerLiveMapPartial" model="firstCargo" />
+
+            <!-- 3.B. 6 Haneli PIN Doğrulama Terminali (Partial View) -->
+            <partial name="Partials/_ManagerPinTerminalPartial" model="firstCargo" />
+        </section>
+    </main>
+
+    <!-- 4. ALT TELEMETRİ BİLGİ ÇUBUĞU (Partial View) -->
+    <partial name="Partials/_ManagerBottomFooterPartial" />
+
+    <!-- JavaScript: Tablodan Seçilen Kargoyu Sağ Telemetri Paneline Senkronize Etme -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('.cargo-row');
+
+            function updateRightPane(row) {
+                rows.forEach(r => {
+                    r.classList.remove('bg-blue-950/30', 'border-l-4', 'border-l-cyan-400');
+                });
+                row.classList.add('bg-blue-950/30', 'border-l-4', 'border-l-cyan-400');
+
+                const id = row.getAttribute('data-id');
+                const code = row.getAttribute('data-code');
+                const receiver = row.getAttribute('data-receiver');
+                const phone = row.getAttribute('data-phone');
+                const origin = row.getAttribute('data-origin');
+                const dest = row.getAttribute('data-destination');
+                const price = row.getAttribute('data-price');
+                const pincode = row.getAttribute('data-pincode');
+                const status = parseInt(row.getAttribute('data-status'));
+                const statusText = row.getAttribute('data-status-text');
+                const shipmentDate = row.getAttribute('data-shipmentdate');
+
+                const trackElem = document.getElementById('focusedTrackCode');
+                if (trackElem) {
+                    trackElem.innerHTML = `${code} <button class="text-slate-400 hover:text-white transition" onclick="navigator.clipboard.writeText('${code}')" title="Kopyala"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button>`;
+                }
+                const priceElem = document.getElementById('focusedPrice');
+                if (priceElem) priceElem.innerText = `₺${price}`;
+
+                const badgeElem = document.getElementById('focusedStatusBadge');
+                if (badgeElem) badgeElem.innerText = statusText.toUpperCase();
+
+                const dateElem = document.getElementById('focusedDateInfo');
+                if (dateElem) dateElem.innerText = `Gönderim: ${shipmentDate} • Standart Kargo`;
+
+                const recipElem = document.getElementById('mapRecipientTag');
+                if (recipElem) recipElem.innerText = `Alıcı: ${receiver}`;
+
+                const barcodeElem = document.getElementById('barcodeTrackCode');
+                if (barcodeElem) barcodeElem.innerText = code;
+
+                const verifyId = document.getElementById('verifyCargoId');
+                if (verifyId) verifyId.value = id;
+
+                const verifyRec = document.getElementById('verifyReceiverInput');
+                if (verifyRec) verifyRec.value = receiver;
+
+                const pinInput = document.getElementById('DeliveryCodeInput');
+                if (pinInput) pinInput.value = pincode;
+
+                const progressBar = document.getElementById('stepperProgressBar');
+                if (progressBar) {
+                    const percentage = status === 6 ? 100 : (status === 5 ? 80 : (status === 4 ? 60 : (status === 3 ? 40 : (status === 2 ? 20 : 10))));
+                    progressBar.style.width = percentage + '%';
+                }
+            }
+
+            rows.forEach(row => {
+                row.addEventListener('click', () => updateRightPane(row));
+            });
+        });
+    </script>
+</body>
+</html>

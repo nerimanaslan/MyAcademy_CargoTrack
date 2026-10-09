@@ -1,0 +1,66 @@
+@model CargoTrack.DTO.DTOs.DashboardDtos.ManagerDashboardDto
+
+<section class="bg-[#080e1d] border-b border-telemetry-border px-5 py-3 flex-none">
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div class="bg-[#0d162a] border-l-4 border-l-blue-500 border border-telemetry-border rounded-lg p-2.5 shadow-sm hover:border-blue-400/50 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span class="font-medium text-blue-200">Bugün Gelen</span>
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl font-extrabold font-mono text-white">@(Model?.TodayIncoming ?? 0)</span>
+                <span class="text-[10px] text-slate-400">Varış şubesi burası</span>
+            </div>
+        </div>
+        <div class="bg-[#0d162a] border-l-4 border-l-cyan-400 border border-telemetry-border rounded-lg p-2.5 shadow-sm hover:border-cyan-400/50 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span class="font-medium text-cyan-200">Bugün Çıkan</span>
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl font-extrabold font-mono text-white">@(Model?.TodayOutgoing ?? 0)</span>
+                <span class="text-[10px] text-slate-400">Şubeden sevk edilen</span>
+            </div>
+        </div>
+        <div class="bg-[#0d162a] border-l-4 border-l-amber-500 border border-telemetry-border rounded-lg p-2.5 shadow-sm hover:border-amber-400/50 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span class="font-medium text-amber-200">Dağıtımdaki</span>
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl font-extrabold font-mono text-amber-300">@(Model?.OutForDeliveryCount ?? 0)</span>
+                <span class="text-[10px] text-slate-400">Kuryede / Sahada</span>
+            </div>
+        </div>
+        <div class="bg-[#0d162a] border-l-4 border-l-emerald-500 border border-telemetry-border rounded-lg p-2.5 shadow-sm hover:border-emerald-400/50 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span class="font-medium text-emerald-200">Bugün Teslim</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl font-extrabold font-mono text-emerald-400">@(Model?.DeliveredCount ?? 0)</span>
+                <span class="text-[10px] text-slate-400">Kodla teslim edildi</span>
+            </div>
+        </div>
+        <div class="bg-[#0d162a] border-l-4 border-l-rose-500 border border-telemetry-border rounded-lg p-2.5 shadow-sm hover:border-rose-400/50 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span class="font-medium text-rose-200">Geciken Kargo</span>
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl font-extrabold font-mono text-rose-400">@(Model?.DelayedCount ?? 0)</span>
+                <span class="text-[10px] text-rose-300/80">SLA Süresi Aşılmış</span>
+            </div>
+        </div>
+        <div class="bg-[#0d162a] border-l-4 border-l-slate-600 border border-telemetry-border rounded-lg p-2.5 shadow-sm hover:border-slate-500 transition">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <span class="font-medium text-slate-300">Sorunlu / İade</span>
+                <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+                <span class="text-2xl font-extrabold font-mono text-slate-300">@(Model?.ProblematicCount ?? 0)</span>
+                <span class="text-[10px] text-slate-400">Hata / İtiraz Kaydı</span>
+            </div>
+        </div>
+    </div>
+</section>

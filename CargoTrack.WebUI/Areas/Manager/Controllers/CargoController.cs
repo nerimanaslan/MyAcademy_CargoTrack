@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CargoTrack.Business.Services.Branches;
 using CargoTrack.Business.Services.Cargos;
 using CargoTrack.Business.Services.Employees;
+using CargoTrack.Business.Services.Dashboards;
 using CargoTrack.DTO.DTOs.Cargos;
 using CargoTrack.Entity.Entities;
 using CargoTrack.Entity.Entities.Enums;
@@ -21,6 +22,7 @@ namespace CargoTrack.WebUI.Areas.Manager.Controllers
         ICargoService _cargoService,
         IBranchService _branchService,
         IEmployeeService _employeeService,
+        IDashboardService _dashboardService,
         UserManager<AppUser> _userManager) : Controller
     {
         private async Task<Guid> GetManagerBranchIdAsync()
@@ -39,14 +41,21 @@ namespace CargoTrack.WebUI.Areas.Manager.Controllers
             if (branchId == Guid.Empty)
                 return Forbid();
 
-            const int pageSize = 10;
+            const int pageSize = 50;
             var (items, totalCount) = await _cargoService.GetCargosByBranchAsync(branchId, search, status, page, pageSize);
+
+            var dashboard = await _dashboardService.GetManagerDashboardAsync(branchId);
+            var branch = await _branchService.GetByIdAsync(branchId);
+            var employees = await _employeeService.GetByBranchIdAsync(branchId);
 
             ViewBag.CurrentSearch = search;
             ViewBag.CurrentStatus = status;
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalCount / pageSize);
             ViewBag.TotalCount = totalCount;
+            ViewBag.Dashboard = dashboard;
+            ViewBag.BranchName = branch?.Name ?? "Kadıköy Şubesi";
+            ViewBag.Employees = employees;
 
             return View(items);
         }
@@ -139,32 +148,35 @@ namespace CargoTrack.WebUI.Areas.Manager.Controllers
                 if (!ModelState.IsValid)
                 {
                     TempData["error"] = "Teslimat kodu 6 haneli rakam olmalıdır.";
-                    return RedirectToAction(nameof(OutForDelivery));
+                    return RedirectBackOrToAction(nameof(Index));
                 }
 
                 var branchId = await GetManagerBranchIdAsync();
-                if (branchId == Guid.Empty)
-                    return Forbid();
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 Guid? guidUserId = Guid.TryParse(userId, out var parsed) ? parsed : null;
 
                 var cargo = await _cargoService.GetCargoDetailByIdAsync(dto.CargoId, guidUserId);
-
-                if (cargo == null || cargo.DestinationBranchId != branchId)
+                if (cargo == null)
                 {
-                    return Forbid();
+                    TempData["error"] = "Kargo bulunamadı.";
+                    return RedirectBackOrToAction(nameof(Index));
+                }
+
+                if (branchId != Guid.Empty && cargo.DestinationBranchId != branchId && cargo.OriginBranchId != branchId)
+                {
+                    TempData["error"] = "Bu kargo şubenize ait bir kargo değildir.";
+                    return RedirectBackOrToAction(nameof(Index));
                 }
 
                 await _cargoService.VerifyDeliveryCodeAndDeliverAsync(dto, guidUserId, User.Identity?.Name);
-                TempData["success"] = "Teslimat kodu başarıyla doğrulandı ve kargo teslim edildi olarak kaydedildi.";
+                TempData["success"] = $"Teslimat kodu başarıyla doğrulandı. Kargo ({cargo.TrackCode}) teslim edildi olarak kaydedildi.";
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
             }
 
-            return RedirectToAction(nameof(OutForDelivery));
+            return RedirectBackOrToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -175,21 +187,24 @@ namespace CargoTrack.WebUI.Areas.Manager.Controllers
                 if (!ModelState.IsValid)
                 {
                     TempData["error"] = "Teslim edilememe sebebi seçilmelidir.";
-                    return RedirectToAction(nameof(OutForDelivery));
+                    return RedirectBackOrToAction(nameof(OutForDelivery));
                 }
 
                 var branchId = await GetManagerBranchIdAsync();
-                if (branchId == Guid.Empty)
-                    return Forbid();
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 Guid? guidUserId = Guid.TryParse(userId, out var parsed) ? parsed : null;
 
                 var cargo = await _cargoService.GetCargoDetailByIdAsync(dto.CargoId, guidUserId);
-
-                if (cargo == null || cargo.DestinationBranchId != branchId)
+                if (cargo == null)
                 {
-                    return Forbid();
+                    TempData["error"] = "Kargo bulunamadı.";
+                    return RedirectBackOrToAction(nameof(OutForDelivery));
+                }
+
+                if (branchId != Guid.Empty && cargo.DestinationBranchId != branchId && cargo.OriginBranchId != branchId)
+                {
+                    TempData["error"] = "Bu kargo şubenize ait bir kargo değildir.";
+                    return RedirectBackOrToAction(nameof(OutForDelivery));
                 }
 
                 await _cargoService.RecordDeliveryExceptionAsync(dto, guidUserId, User.Identity?.Name);
@@ -200,7 +215,17 @@ namespace CargoTrack.WebUI.Areas.Manager.Controllers
                 TempData["error"] = ex.Message;
             }
 
-            return RedirectToAction(nameof(OutForDelivery));
+            return RedirectBackOrToAction(nameof(OutForDelivery));
+        }
+
+        private IActionResult RedirectBackOrToAction(string actionName)
+        {
+            var referer = Request.Headers["Referer"].ToString();
+            if (!string.IsNullOrEmpty(referer) && Uri.TryCreate(referer, UriKind.Absolute, out var uri))
+            {
+                return Redirect(uri.PathAndQuery);
+            }
+            return RedirectToAction(actionName);
         }
     }
 }

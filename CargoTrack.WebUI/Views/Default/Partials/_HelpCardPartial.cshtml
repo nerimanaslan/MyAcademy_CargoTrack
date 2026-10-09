@@ -1,26 +1,29 @@
-﻿<div class="bg-surface-container-low rounded-xl p-6 relative overflow-hidden h-full flex flex-col border border-surface-container shadow-sm">
+<div class="bg-[#0d1527] rounded-xl p-6 relative overflow-hidden h-full flex flex-col border border-[#1e2f58] shadow-xl">
     <div class="absolute -right-4 -top-4 opacity-10 pointer-events-none">
-        <span class="material-symbols-outlined text-[120px]">help</span>
+        <span class="material-symbols-outlined text-[120px] text-cyan-400">help</span>
     </div>
 
-    <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container mb-4 relative z-10 shadow-sm">
+    <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-cyan-400 mb-4 relative z-10 shadow-sm">
         <span class="material-symbols-outlined text-lg">lightbulb</span>
     </div>
 
-    <h3 class="font-headline-md text-headline-md text-on-background mb-3 relative z-10">Takip numaramı nereden bulabilirim?</h3>
-    <p class="font-body-md text-body-md text-on-surface-variant mb-6 relative z-10 flex-grow">
-        Gönderi oluşturulduğunda size SMS veya e-posta ile iletilen <strong class="text-on-background font-semibold">MYC-2026-XXXXXX</strong> formatındaki kodu kullanabilirsiniz.
+    <h3 class="font-headline-md text-headline-md text-white font-bold mb-3 relative z-10">Takip numaramı nereden bulabilirim?</h3>
+    <p class="font-body-md text-body-md text-slate-300 mb-6 relative z-10 flex-grow text-sm leading-relaxed">
+        Gönderi oluşturulduğunda size SMS veya e-posta ile iletilen <strong class="text-cyan-300 font-mono">MYC-2026-XXXXXX</strong> formatındaki kodu kullanabilirsiniz.
     </p>
 
-    <div class="p-3 bg-white/80 rounded border border-gray-200 relative z-10 mb-4 text-xs text-gray-600">
-        <div class="font-semibold text-gray-800 mb-1">Test Etmek İçin Örnek Kod:</div>
+    <div class="p-3.5 bg-[#060b17] rounded-lg border border-[#1e2f58] relative z-10 mb-4 text-xs text-slate-300">
+        <div class="font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            Hızlı Test İçin Örnek Kod:
+        </div>
         <div class="flex flex-wrap gap-2">
-            <a href="/Default/CargoDetails?trackCode=CT202609081234" class="text-blue-600 underline hover:text-blue-800">CT202609081234</a>
+            <a href="/Default/CargoDetails?trackCode=MYC-2026-584167" class="text-cyan-400 font-mono font-bold hover:underline">MYC-2026-584167</a>
         </div>
     </div>
 
-    <a class="text-primary font-bold text-sm flex items-center gap-1 hover:underline relative z-10 mt-auto" href="#">
-        Destek Merkezi'ne Git
+    <a class="text-cyan-400 hover:text-cyan-300 font-bold text-sm flex items-center gap-1 hover:underline relative z-10 mt-auto" href="/Login/Index">
+        Sisteme Giriş Yap
         <span class="material-symbols-outlined text-sm">open_in_new</span>
     </a>
 </div>

@@ -1,0 +1,107 @@
+@model List<ResultCargoDto>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var c in Model)
+    {
+        <!-- Delivery Modal -->
+        <div class="modal fade" id="deliverModal-@c.Id" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content text-start bg-dark border border-secondary text-white">
+                    <form asp-action="VerifyDelivery" method="post">
+                        <div class="modal-header bg-success text-white border-bottom border-secondary">
+                            <h5 class="modal-title fs-6">Teslimat Doğrulama - @c.TrackCode</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="CargoId" value="@c.Id" />
+
+                            <div class="alert alert-info py-2 small bg-opacity-25 bg-info border-info text-info">
+                                Alıcının telefonuna SMS ile iletilen <strong>6 haneli güvenlik kodunu</strong> giriniz. Doğrulama başarılı olmadan kargo teslim edilemez.
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-white">6 Haneli Teslimat Kodu</label>
+                                <input type="text" name="DeliveryCode" class="form-control form-control-lg text-center font-monospace tracking-widest fw-bold bg-dark text-white border-secondary" placeholder="______" maxlength="6" minlength="6" inputmode="numeric" pattern="[0-9]{6}" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Teslim Alan Kişi</label>
+                                <input type="text" name="ReceivedBy" class="form-control bg-dark text-white border-secondary" value="@c.ReceiverName" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Alıcıya Yakınlık Derecesi</label>
+                                <select name="ReceiverRelationship" class="form-select bg-dark text-white border-secondary">
+                                    <option value="Kendisi">Kendisi</option>
+                                    <option value="Aile Bireyi">Aile Bireyi</option>
+                                    <option value="İş Arkadaşı / Sekreter">İş Arkadaşı / Sekreter</option>
+                                    <option value="Site Güvenliği / Komşu">Site Güvenliği / Komşu</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Teslim Eden Personel</label>
+                                <select name="EmployeeId" asp-items="ViewBag.Employees" class="form-select bg-dark text-white border-secondary">
+                                    <option value="">-- Personel Seçin --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                            <button type="submit" class="btn btn-success">Kodu Onayla ve Teslimatı Bitir</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exception Modal -->
+        <div class="modal fade" id="exceptionModal-@c.Id" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content text-start bg-dark border border-secondary text-white">
+                    <form asp-action="RecordException" method="post">
+                        <div class="modal-header bg-danger text-white border-bottom border-secondary">
+                            <h5 class="modal-title fs-6">Teslim Edilemedi Kaydı - @c.TrackCode</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="CargoId" value="@c.Id" />
+
+                            <div class="alert alert-warning py-2 small bg-opacity-25 bg-warning border-warning text-warning">
+                                Kargo teslim edilemediğinde gerekçe belirtilmelidir. <strong>3 başarısız deneme</strong> sonunda kargo otomatik olarak <strong>İade Sürecine</strong> alınacaktır.
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Hata / İstisna Sebebi</label>
+                                <select name="Reason" class="form-select bg-dark text-white border-secondary" required>
+                                    <option value="Adres Hatalı / Yetersiz">Adres Hatalı / Yetersiz</option>
+                                    <option value="Alıcı Adreste Bulunamadı">Alıcı Adreste Bulunamadı (Evde Yok)</option>
+                                    <option value="Alıcı Kargoyu Kabul Etmedi (Reddetti)">Alıcı Kargoyu Kabul Etmedi (Reddetti)</option>
+                                    <option value="Hasarlı Kargo Tespiti">Hasarlı Kargo Tespiti</option>
+                                    <option value="Ulaşım / Hava Muhalefeti Engeli">Ulaşım / Hava Muhalefeti Engeli</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Operasyon Notu</label>
+                                <textarea name="Notes" class="form-control bg-dark text-white border-secondary" rows="2" placeholder="Kurye saha notu..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-white">Kurye / Personel</label>
+                                <select name="EmployeeId" asp-items="ViewBag.Employees" class="form-select bg-dark text-white border-secondary">
+                                    <option value="">-- Personel Seçin --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                            <button type="submit" class="btn btn-danger">Hata Kaydını İşle</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}

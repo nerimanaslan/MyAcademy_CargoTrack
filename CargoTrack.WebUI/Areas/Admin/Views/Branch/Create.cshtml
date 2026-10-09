@@ -1,20 +1,51 @@
-﻿@model CreateBranchDto
+@model CreateBranchDto
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Yeni Şube Oluştur";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h3>Yeni Şube Oluştur</h3>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold mb-1">Yeni Şube Kaydı</h2>
+        <p class="text-muted small mb-0">Sisteme yeni bir teslimat / kabul şubesi tanımlayın</p>
+    </div>
+    <a href="/Admin/Branch/Index" class="btn btn-outline-secondary d-flex align-items-center gap-1">
+        <span class="material-symbols-outlined fs-6">arrow_back</span>
+        Şube Listesine Dön
+    </a>
+</div>
 
-<form method="post">
-    <label>Şube İsmi</label>
-    <input type="text" asp-for="Name" class="form-control" />
-    <span class="text-danger" asp-validation-for="Name"></span>
-    <br />
-    <label>Şehir</label>
-    <select asp-for="CityId" class="form-control" asp-items="@ViewBag.cities">
-        <option disabled selected>---Şehri Seçiniz---</option>
-    </select>
-    <br />
-    <button class="btn btn-dark">Kaydet</button>
-</form>
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card card-stat bg-white p-4 shadow-sm">
+            <h5 class="fw-bold mb-3 border-bottom pb-2 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-info">add_business</span>
+                Şube Bilgileri
+            </h5>
+
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold">Şube İsmi</label>
+                    <input type="text" asp-for="Name" class="form-control" placeholder="Örn: Kadıköy Şube" required />
+                    <span class="text-danger small" asp-validation-for="Name"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="CityId" class="form-label fw-semibold">Bağlı Olduğu Şehir</label>
+                    <select asp-for="CityId" class="form-select" asp-items="@ViewBag.cities" required>
+                        <option disabled selected value="">--- Şehir Seçiniz ---</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="CityId"></span>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pt-2">
+                    <a href="/Admin/Branch/Index" class="btn btn-outline-secondary">İptal</a>
+                    <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined fs-6">save</span>
+                        Şubeyi Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

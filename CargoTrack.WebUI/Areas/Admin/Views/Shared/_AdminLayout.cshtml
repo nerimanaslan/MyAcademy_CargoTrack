@@ -3,21 +3,219 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CargoTrack Yönetim Paneli</title>
+    <title>@ViewData["Title"] - CargoTrack Telemetri & Yönetim Konsolu</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Hanken Grotesk', sans-serif; background-color: #f4f6f9; color: #212529; }
-        .sidebar { min-height: 100vh; background-color: #001e3c; color: #fff; }
-        .sidebar a { color: #cfd8dc; text-decoration: none; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-radius: 6px; margin: 3px 8px; font-size: 14px; font-weight: 500; transition: all 0.2s; }
-        .sidebar a:hover, .sidebar a.active { background-color: #0b3c6d; color: #ffffff; }
-        .sidebar .sidebar-heading { font-size: 11px; text-transform: uppercase; color: #78909c; padding: 12px 18px 4px; font-weight: 700; letter-spacing: 0.5px; }
-        .main-content { min-height: 100vh; display: flex; flex-direction: column; }
-        .topbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
-        .card-stat { border-radius: 10px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .material-symbols-outlined { font-size: 20px; }
+        :root {
+            --bg-base: #070b14;
+            --bg-surface: #0b1224;
+            --bg-card: #0d1527;
+            --border-color: #1e2f58;
+            --text-main: #e2e8f0;
+            --text-muted: #62749d;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090e1c; }
+        ::-webkit-scrollbar-thumb { background: #1e2f58; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334e8d; }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
+            color: #fff;
+        }
+        .sidebar a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 9px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 8px;
+            margin: 2px 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .sidebar a:hover {
+            background-color: #131d38;
+            color: #38bdf8;
+        }
+        .sidebar a.active {
+            background-color: #162343;
+            color: var(--accent-cyan);
+            border-left: 3px solid var(--accent-cyan);
+            font-weight: 600;
+        }
+        .sidebar .sidebar-heading {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #475569;
+            padding: 14px 18px 4px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+        }
+        .main-content {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-base);
+        }
+        .topbar {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card, .card-stat {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+        }
+        .card-header {
+            background-color: #0f1a33 !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+        .table {
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+            margin-bottom: 0;
+        }
+        .table thead th {
+            background-color: #0c1428 !important;
+            color: #94a3b8 !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .table tbody tr {
+            background-color: #090f1f !important;
+            transition: background 0.15s;
+        }
+        .table tbody tr:hover {
+            background-color: #101b33 !important;
+        }
+        .table td, .table th {
+            border-color: rgba(30, 47, 88, 0.7) !important;
+            vertical-align: middle;
+        }
+        .form-control, .form-select {
+            background-color: #060b17 !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.3) !important;
+            color: #fff !important;
+        }
+        .form-control::placeholder {
+            color: #475569 !important;
+        }
+        .form-label {
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .btn-primary {
+            background-color: #2563eb !important;
+            border-color: #1d4ed8 !important;
+            box-shadow: 0 0 15px -3px rgba(37, 99, 235, 0.4);
+        }
+        .btn-warning {
+            background-color: #f59e0b !important;
+            border-color: #d97706 !important;
+            color: #000 !important;
+            font-weight: 600;
+            box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.4);
+        }
+        .btn-success {
+            background-color: #10b981 !important;
+            border-color: #059669 !important;
+            box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.4);
+        }
+        .btn-danger {
+            background-color: #f43f5e !important;
+            border-color: #e11d48 !important;
+        }
+        .btn-outline-secondary {
+            border-color: var(--border-color) !important;
+            color: #94a3b8 !important;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #162343 !important;
+            color: #fff !important;
+        }
+        .alert-success {
+            background-color: #0d1f35 !important;
+            border: 1px solid var(--accent-emerald) !important;
+            color: #6ee7b7 !important;
+            border-radius: 10px;
+        }
+        .alert-danger {
+            background-color: #2d111b !important;
+            border: 1px solid var(--accent-rose) !important;
+            color: #fda4af !important;
+            border-radius: 10px;
+        }
+        .modal-content {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.7);
+        }
+        .modal-header, .modal-footer {
+            border-color: var(--border-color) !important;
+            background-color: #0b1224 !important;
+        }
+        .material-symbols-outlined { font-size: 19px; }
+        footer {
+            background-color: #050914 !important;
+            border-top: 1px solid var(--border-color) !important;
+            color: #64748b !important;
+        }
+        .bg-white { background-color: var(--bg-card) !important; }
+        .bg-light { background-color: #0b1224 !important; color: #cbd5e1 !important; }
+        .text-dark { color: #f1f5f9 !important; }
+        .text-muted { color: var(--text-muted) !important; }
+        .table-light, .table-light th, .table-light td { background-color: #0c1428 !important; color: #94a3b8 !important; }
+        .list-group-item { background-color: var(--bg-card) !important; color: var(--text-main) !important; border-color: var(--border-color) !important; }
+        .progress { background-color: #060b17 !important; border: 1px solid var(--border-color) !important; }
+        .border, .border-bottom, .border-top, .border-start, .border-end { border-color: var(--border-color) !important; }
+        .border-start.border-4 { background-color: var(--bg-card) !important; }
+        .badge.bg-dark { background-color: #162343 !important; border: 1px solid var(--border-color); color: #38bdf8 !important; }
+        .badge.bg-light { background-color: #0c152a !important; border: 1px solid var(--border-color); color: #cbd5e1 !important; }
+        .input-group-text { background-color: #0c152a !important; border-color: var(--border-color) !important; color: #94a3b8 !important; }
+        .btn-dark { background-color: #162343 !important; border-color: var(--border-color) !important; color: #38bdf8 !important; }
+        .btn-dark:hover { background-color: #1e2f58 !important; color: #fff !important; }
+        .pagination .page-link { background-color: #0c152a !important; border-color: var(--border-color) !important; color: #94a3b8 !important; }
+        .pagination .page-item.active .page-link { background-color: #2563eb !important; border-color: #2563eb !important; color: #fff !important; }
     </style>
 </head>
 <body>
@@ -25,11 +223,13 @@
         <div class="row g-0">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar d-none d-md-block">
-                <div class="p-3 border-bottom border-secondary d-flex align-items-center gap-2">
-                    <span class="material-symbols-outlined text-warning" style="font-size: 28px;">package_2</span>
+                <div class="p-3 border-bottom d-flex align-items-center gap-2.5" style="border-color: var(--border-color) !important;">
+                    <div class="p-2 rounded-3 bg-primary bg-opacity-25 text-cyan d-flex align-items-center justify-content-center">
+                        <span class="material-symbols-outlined text-info" style="font-size: 24px;">local_shipping</span>
+                    </div>
                     <div>
-                        <div class="fw-bold fs-5 text-white">CargoTrack</div>
-                        <div class="text-secondary small" style="font-size: 11px;">Admin Yönetim Sistemi</div>
+                        <div class="fw-bold fs-6 text-white tracking-wide">Cargo<span class="text-info">Track</span></div>
+                        <div class="text-secondary small" style="font-size: 10px; letter-spacing: 0.5px;">V4.8 ENTERPRISE ADMIN</div>
                     </div>
                 </div>
 
@@ -39,8 +239,8 @@
                     Dashboard
                 </a>
                 <a href="/Admin/Report/Index">
-                    <span class="material-symbols-outlined">analytics</span>
-                    Performans & Raporlar
+                    <span class="material-symbols-outlined">insights</span>
+                    Performans &amp; Raporlar
                 </a>
 
                 <div class="sidebar-heading">Kargo Yönetimi</div>
@@ -53,7 +253,7 @@
                     Yeni Kargo Kabulü
                 </a>
 
-                <div class="sidebar-heading">Şube & Lojistik Ağı</div>
+                <div class="sidebar-heading">Lojistik Ağı &amp; Personel</div>
                 <a href="/Admin/Branch/Index">
                     <span class="material-symbols-outlined">store</span>
                     Şubeler
@@ -67,22 +267,22 @@
                     Personeller
                 </a>
 
-                <div class="sidebar-heading">Sistem & Kurallar</div>
+                <div class="sidebar-heading">Sistem &amp; Yetki</div>
                 <a href="/Admin/Pricing/Index">
                     <span class="material-symbols-outlined">payments</span>
                     Dinamik Fiyatlandırma
                 </a>
                 <a href="/Admin/RoleAssign/Index">
                     <span class="material-symbols-outlined">group</span>
-                    Kullanıcı & Roller
+                    Kullanıcı &amp; Roller
                 </a>
                 <a href="/Admin/AuditLog/Index">
                     <span class="material-symbols-outlined">history_toggle_off</span>
                     Audit Log (Denetim)
                 </a>
 
-                <hr class="border-secondary mx-3 my-2" />
-                <a href="/Default/Index" target="_blank">
+                <hr class="mx-3 my-2" style="border-color: var(--border-color) !important;" />
+                <a href="/Default/Index" target="_blank" class="text-info">
                     <span class="material-symbols-outlined">open_in_new</span>
                     Kargo Takip Ekranı
                 </a>
@@ -96,11 +296,18 @@
             <div class="col-md-9 col-lg-10 main-content">
                 <header class="topbar">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-danger">Sistem Yöneticisi</span>
-                        <span class="text-muted small">| Hoş geldiniz, <strong>@User.Identity?.Name</strong></span>
+                        <span class="badge bg-danger bg-opacity-75 px-2.5 py-1 text-white border border-danger border-opacity-50">Sistem Yöneticisi</span>
+                        <span class="text-secondary small">| Hoş geldiniz, <strong class="text-light">@User.Identity?.Name</strong></span>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <a href="/Default/Index" class="btn btn-sm btn-outline-primary">Herkese Açık Takip Ekranı</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-none d-sm-flex align-items-center gap-1.5 px-2.5 py-1 rounded-2 bg-dark border border-secondary border-opacity-25 small text-success font-monospace" style="font-size: 11px;">
+                            <span class="spinner-grow spinner-grow-sm" style="width: 7px; height: 7px;"></span>
+                            Canlı Telemetri
+                        </div>
+                        <a href="/Default/Index" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">public</span>
+                            Takip Ekranı
+                        </a>
                         <a href="/Login/Logout" class="btn btn-sm btn-outline-danger">Çıkış</a>
                     </div>
                 </header>
@@ -111,7 +318,7 @@
                         <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
                             <span class="material-symbols-outlined align-middle me-1">check_circle</span>
                             @TempData["success"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                         </div>
                     }
                     @if (TempData["error"] != null)
@@ -119,15 +326,15 @@
                         <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
                             <span class="material-symbols-outlined align-middle me-1">error</span>
                             @TempData["error"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                         </div>
                     }
 
                     @RenderBody()
                 </main>
 
-                <footer class="bg-white border-top p-3 text-center text-muted small">
-                    CargoTrack Case Study • .NET Core MVC & N-Katmanlı Mimari Kurumsal Kargo Takip Sistemi © 2026
+                <footer class="p-3 text-center small">
+                    CargoTrack Telemetry Engine • .NET Core MVC & N-Katmanlı Mimari © 2026
                 </footer>
             </div>
         </div>
